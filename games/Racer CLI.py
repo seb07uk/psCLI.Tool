@@ -2,7 +2,7 @@
 __author__ = "Sebastian Januchowski"
 __category__ = "games"
 __group__ = "entertainment"
-__desc__ = "Retro arcade Racer CLI game with levels."
+__desc__ = "A High-Speed Retro Data Stream Survival Game."
 
 import tkinter as tk
 import random
