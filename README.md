@@ -18,6 +18,7 @@
 - [Configuration](#configuration)
 - [Built-in Plugins](#built-in-plugins)
 - [Games](#games)
+- [Tools](#tools)
 - [License](#license)
 
 ## Features
@@ -28,6 +29,7 @@
 - 🎨 **ANSI Color Support** - Rich, colorized terminal output with themed commands
 - ⚡ **Command Aliasing** - Define aliases for frequently used commands
 - 📚 **Professional Help System** - Comprehensive documentation and usage examples for all commands
+- 📘 **Adaptive Help Output** - Line wrapping based on terminal width for readability
 - 🎮 **Integrated Games** - Built-in terminal games (Tic-Tac-Toe, Snake, Rock-Paper-Scissors)
 - 📊 **Calculator & Tools** - Scientific calculator with history logging
 - 🔧 **Metadata System** - JSON-based configuration for plugin metadata
@@ -50,6 +52,8 @@ psCLI.Tool/
 │   ├── notepad.py                 # Text editor launcher
 │   ├── paint.py                   # Paint application launcher
 │   ├── office.py                  # MS Office suite launcher
+│   ├── file.py                    # CMD File Manager CLI
+│   ├── lg2txt.py                  # File list generator
 │   ├── echo.py                    # Echo/print utilities
 │   ├── print.py                   # Print file operations
 │   ├── cls.py                     # Clear screen command
@@ -59,13 +63,19 @@ psCLI.Tool/
 │   ├── save.py                    # File saving utilities
 │   ├── venv.py                    # Virtual environment management
 │   └── __pycache__/               # Python cache directory
+├── tools/                         # External tools launched via 'hack'
+│   ├── MAS.cmd                    # Microsoft Activation Scripts
+│   ├── Office_365.bat             # Office 365 installer/activator
+│   └── pmas.cmd                   # PowerShell Multi Activation System
 ├── games/                         # Standalone game modules
 │   ├── Tic-Tac-Toe.py            # Tic-Tac-Toe game
 │   ├── Snake CLI.py               # Snake game
 │   └── Rock-Paper-Scissors.py     # Rock-Paper-Scissors game
 ├── metadata/                      # Metadata and configuration
-│   ├── venv.py.json              # Virtual environment settings
-│   └── (other plugin metadata files)
+│   ├── venv.py.json               # Virtual environment settings
+│   ├── MAS.cmd.json               # MAS tool metadata
+│   ├── Office_365.bat.json        # Office 365 tool metadata
+│   └── pmas.cmd.json              # PMAS tool metadata
 └── __pycache__/                   # Python cache directory
 ```
 
@@ -148,29 +158,31 @@ python cli.py help
 
 | Command | Aliases | Description |
 |---------|---------|-------------|
-| `calculator` | `calc` | Scientific calculator with calculation history |
-| `notepad` | `edit` | Launch Notepad text editor |
-| `paint` | `draw` | Launch Paint application |
-| `browser` | `web` | Launch default web browser |
-| `office` | `ms` | Microsoft Office suite launcher |
+| `calculator` | `calc`, `math`, `kalk` | Scientific calculator with calculation history |
+| `notepad` | `note`, `n` | Launch Notepad text editor |
+| `paint` | `p` | Launch Paint application |
+| `print` | `cat`, `type` | Print file contents with highlighting |
+| `browser` | `web`, `www` | Launch CLI web browser |
+| `office` | `docs`, `work` | Microsoft Office utilities launcher |
 
 ### System Group Commands
 
 | Command | Aliases | Description |
 |---------|---------|-------------|
-| `cls` | `clear` | Clear terminal screen |
-| `pwd` | `current` | Print current working directory |
-| `cd` | `chdir` | Change directory |
-| `dir` | `ls` | List directory contents |
-| `echo` | `print` | Echo text to console |
-| `print` | `type` | Print file contents |
+| `cls` | `clear`, `clean`, `c` | Clear terminal screen |
+| `pwd` | `path`, `where` | Print current working directory |
+| `cd` | `chdir`, `jump` | Change directory |
+| `dir` | `ls`, `list` | List directory contents |
+| `echo` | `say`, `repeat`, `e` | Echo text to console |
 
 ### Utility Group Commands
 
 | Command | Aliases | Description |
 |---------|---------|-------------|
-| `save` | `export` | File saving utilities |
-| `venv` | `virtualenv` | Virtual environment management |
+| `save` | `/s` | File saving utilities |
+| `venv` | `ve` | Virtual environment management |
+| `file` | `fm`, `fileman` | CMD File Manager CLI |
+| `lg2txt` | `lg`, `listgen` | File list generator |
 
 ## Plugin Architecture
 
@@ -338,6 +350,7 @@ psCLI.Tool > help
 - Usage examples and syntax variations
 - Tips and tricks
 - Quick reference guide
+- Adaptive line wrapping for readable output in narrow terminals
 
 ### Core Viewer (`core.py`)
 
@@ -345,6 +358,37 @@ View core system plugins:
 
 ```bash
 psCLI.Tool > core
+```
+
+### File Manager (`file.py`)
+
+Full-screen file manager with common filesystem operations:
+
+```bash
+psCLI.Tool > file
+```
+
+**Features:**
+- Navigate directories and parent path
+- Disk usage information
+- Create/delete/rename/copy/move
+- Backup (mirror) directories
+- Recursive search and list save
+
+### Browser (`browser.py`)
+
+CLI web browser with history, cookies and link navigation:
+
+```bash
+psCLI.Tool > browser
+```
+
+### LG2TXT (`lg2txt.py`)
+
+Interactive file list generator with global settings sync:
+
+```bash
+psCLI.Tool > lg2txt
 ```
 
 ## Games
@@ -370,6 +414,22 @@ Play against the computer
 ```bash
 psCLI.Tool > games
 > 3
+```
+
+## Tools
+
+External tools available via the hack menu:
+
+- `MAS.cmd` — Microsoft Activation Scripts
+- `pmas.cmd` — PowerShell Multi Activation System
+- `Office_365.bat` — Office 365 installer/activator
+
+Usage:
+```bash
+psCLI.Tool > hack
+hack mas
+hack pmas
+hack Office_365
 ```
 
 ## Development

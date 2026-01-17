@@ -20,6 +20,8 @@
 
 import os
 import sys
+import shutil
+import textwrap
 
 # --- METADATA (Read by cli.py) ---
 __author__ = "Sebastian Januchowski"
@@ -120,7 +122,7 @@ PLUGINS_DB = {
         "name": "cls",
         "category": "system",
         "description": "Clears the console screen instantly and refreshes the display",
-        "aliases": ["clear", "c"],
+        "aliases": ["clear", "clean", "c"],
         "syntax": ["cls", "clear", "c"],
         "examples": [("cls", "Clear the entire screen")],
         "tips": ["Keyboard shortcuts for quick access", "Useful after large outputs"],
@@ -130,8 +132,8 @@ PLUGINS_DB = {
     "echo": {
         "name": "echo",
         "category": "output",
-        "description": "Displays text in colored output - useful for status messages and notifications",
-        "aliases": ["say", "print-text"],
+        "description": "Displays the provided text in green",
+        "aliases": ["say", "repeat", "e"],
         "syntax": ["echo <text>", "say <text>"],
         "examples": [
             ("echo Hello World", "Prints text in green"),
@@ -144,7 +146,7 @@ PLUGINS_DB = {
         "name": "calculator",
         "category": "math",
         "description": "Professional scientific calculator with history logging and mathematical functions",
-        "aliases": ["calc", "math"],
+        "aliases": ["calc", "math", "kalk"],
         "syntax": ["calculator", "calc", "math"],
         "storage": r"%userprofile%\.polsoft\psCli\Calculator\history.txt",
         "features": [
@@ -165,7 +167,7 @@ PLUGINS_DB = {
         "description": "Display file contents with syntax highlighting and optional text search",
         "aliases": ["cat", "type"],
         "syntax": ["print <file>", "cat <file>", "cat <file> <search_term>"],
-        "supported_types": [".json", ".py", ".log", ".md", ".csv", ".txt", ".xml"],
+        "supported_types": [".json", ".py", ".log", ".md", ".csv", ".txt", ".xml", ".yaml"],
         "examples": [
             ("print script.py", "View Python code with highlighting"),
             ("cat log.txt ERROR", "Search for 'ERROR' in log"),
@@ -180,7 +182,7 @@ PLUGINS_DB = {
         "name": "notepad",
         "category": "text editing",
         "description": "Interactive text editor with AutoSave and note management - full-featured text editor",
-        "aliases": ["note", "edit"],
+        "aliases": ["note", "n"],
         "syntax": ["notepad", "note [filename]", "edit [filename]"],
         "storage": r"%userprofile%\.polsoft\psCLI\Notepad",
         "shortcuts": [
@@ -197,12 +199,12 @@ PLUGINS_DB = {
         "tips": ["Auto-saves with timestamps", "Files stored with date/time naming", "Supports basic text formatting"]
     },
     
-    "browse": {
-        "name": "browse",
+    "browser": {
+        "name": "browser",
         "category": "web browser",
         "description": "psBrowser CLI: Full Suite with History & Quick Links - Full-featured CLI web browser with history, cookies, and screenshot functionality",
-        "aliases": ["web", "browser"],
-        "syntax": ["browse [url]", "web [url]"],
+        "aliases": ["web", "www"],
+        "syntax": ["browser [url]", "web [url]", "www [url]"],
         "features": [
             "Full HTML rendering in CLI",
             "Numbered link navigation",
@@ -213,7 +215,7 @@ PLUGINS_DB = {
         ],
         "examples": [
             ("web google.com", "Open Google"),
-            ("browse github.com", "Browse GitHub"),
+            ("browser github.com", "Browse GitHub"),
             ("web", "Open home page")
         ],
         "shortcuts": [
@@ -317,7 +319,7 @@ PLUGINS_DB = {
         "name": "paint",
         "category": "paint cli",
         "description": "Paint application for drawing in terminal - ASCII art creation with multiple colors",
-        "aliases": ["draw", "art"],
+        "aliases": ["p"],
         "syntax": ["paint", "draw"],
         "features": [
             "Terminal-based drawing",
@@ -354,7 +356,8 @@ PLUGINS_DB = {
         "examples": [
             ("hack", "Show available tools"),
             ("hack pmas", "Execute PMAS activation tool"),
-            ("hack Office_365", "Execute Office 365 batch script")
+            ("hack Office_365", "Execute Office 365 batch script"),
+            ("hack mas", "Execute Microsoft Activation Scripts")
         ],
         "tips": ["Tools are loaded from /tools/ directory", "Metadata stored in /metadata/", "Easy integration of new tools"],
         "storage": r"v:\tools"
@@ -400,22 +403,95 @@ PLUGINS_DB = {
         "tips": ["Downloads Office Deployment Tool automatically", "Requires internet connection", "Creates configuration files dynamically"],
         "group": "microsoft",
         "requires": "Administrator privileges, Internet connection"
+    },
+    
+    "file": {
+        "name": "file",
+        "category": "file manager",
+        "description": "CMD Cli File Manager: full suite with history and quick links",
+        "aliases": ["fm", "fileman"],
+        "syntax": ["file"],
+        "features": [
+            "Navigate directories and parent path",
+            "Disk usage information",
+            "Create/delete files and folders",
+            "Rename, copy, move items",
+            "Backup (mirror) directories",
+            "Search files recursively",
+            "Save file list reports",
+            "Open saved reports folder"
+        ],
+        "examples": [("file", "Launch the File Manager")],
+        "tips": ["Use menu options [1-18]", "Reports saved with timestamps"],
+        "storage": r"%userprofile%\.polsoft\psCLI\FileList"
+    },
+    
+    "lg2txt": {
+        "name": "lg2txt",
+        "category": "file list",
+        "description": "Terminal file list generator with global settings sync",
+        "aliases": ["lg", "listgen"],
+        "syntax": ["lg2txt"],
+        "features": [
+            "Generate lists of files and folders",
+            "Files-only mode",
+            "Extension filter mode",
+            "Preview generated output",
+            "Sync settings in terminal.json"
+        ],
+        "examples": [("lg2txt", "Open interactive list generator")],
+        "tips": ["Change source/output paths from menu", "Logs written to List.log"],
+        "storage": r"%userprofile%\.polsoft\psCLI\Log\List.log"
+    },
+    
+    "mas": {
+        "name": "mas",
+        "category": "activation",
+        "description": "Microsoft Activation Scripts (MAS) - Windows/Office activation tool",
+        "aliases": ["mas", "activation", "kms"],
+        "syntax": ["mas"],
+        "features": [
+            "Windows activation",
+            "Office activation",
+            "Multiple activation methods"
+        ],
+        "examples": [("hack mas", "Execute Microsoft Activation Scripts")],
+        "tips": ["Requires administrator privileges", "Loaded via hack tools menu"],
+        "group": "microsoft"
     }
 }
 
 # ======================== HELP ENGINE ========================
 
+def _term_width(default=76):
+    try:
+        w = shutil.get_terminal_size((default, 20)).columns
+        return max(50, min(w, 120))
+    except:
+        return default
+
 def format_section(title):
-    """Format a help section title."""
     return f"{YELLOW}{title.upper()}:{RESET}"
 
 def format_command(cmd, desc):
-    """Format a command line."""
-    return f"  {GREEN}{cmd.ljust(25)}{RESET} {desc}"
+    width = _term_width()
+    cmd_col = 25
+    prefix = f"  {GREEN}{cmd.ljust(cmd_col)}{RESET} "
+    wrap_width = max(20, width - (cmd_col + 3))
+    desc_lines = textwrap.wrap(desc, width=wrap_width)
+    if not desc_lines:
+        return prefix
+    lines = [prefix + desc_lines[0]]
+    subsequent_indent = " " * (cmd_col + 3)
+    for line in desc_lines[1:]:
+        lines.append(subsequent_indent + line)
+    return "\n".join(lines)
 
 def format_tip(tip):
-    """Format a tip line."""
-    return f"  {MAGENTA}-{RESET} {tip}"
+    width = _term_width()
+    bullet = f"  {MAGENTA}-{RESET} "
+    wrap_width = max(20, width - 6)
+    return textwrap.fill(tip, width=wrap_width, initial_indent=bullet, subsequent_indent="    ")
 
 def print_separator(char="=", length=75):
     """Print a visual separator."""
@@ -500,7 +576,9 @@ def _display_command_help(cmd_name):
     print(f"{CYAN}{BOLD}{'-' * 75}{RESET}\n")
     
     # Description
-    print(f"{WHITE}{info['description']}{RESET}\n")
+    width = _term_width()
+    desc_wrapped = textwrap.fill(info['description'], width=max(40, width - 2))
+    print(f"{WHITE}{desc_wrapped}{RESET}\n")
     
     # Aliases if available
     if "aliases" in info and info["aliases"]:
@@ -515,34 +593,37 @@ def _display_command_help(cmd_name):
     # Syntax
     print(format_section("Syntax"))
     for syntax_line in info['syntax']:
-        print(f"  {GREEN}{syntax_line}{RESET}")
+        syn_wrapped = textwrap.fill(syntax_line, width=max(40, _term_width() - 4), initial_indent="  ", subsequent_indent="  ")
+        print(f"{GREEN}{syn_wrapped}{RESET}")
     print()
     
     # Options
     if "options" in info:
         print(format_section("Options"))
         for opt in info['options']:
-            print(f"  {BLUE}{opt}{RESET}")
+            opt_wrapped = textwrap.fill(opt, width=max(40, _term_width() - 4), initial_indent="  ", subsequent_indent="  ")
+            print(f"{BLUE}{opt_wrapped}{RESET}")
         print()
     
     # Features
     if "features" in info:
         print(format_section("Features"))
         for feature in info['features']:
-            print(f"  {MAGENTA}-{RESET} {feature}")
+            print(format_tip(feature))
         print()
     
     # Supported types
     if "supported_types" in info:
         print(format_section("Supported Types"))
         types_str = ", ".join(info["supported_types"])
-        print(f"  {types_str}\n")
+        types_wrapped = textwrap.fill(types_str, width=max(40, _term_width() - 4), initial_indent="  ", subsequent_indent="  ")
+        print(f"{types_wrapped}\n")
     
     # Color palette
     if "color_palette" in info:
         print(format_section("Color Palette"))
         for color in info["color_palette"]:
-            print(f"  {MAGENTA}-{RESET} {color}")
+            print(format_tip(color))
         print()
     
     # Examples
@@ -555,7 +636,7 @@ def _display_command_help(cmd_name):
     if "shortcuts" in info:
         print(format_section("Keyboard Shortcuts"))
         for shortcut in info["shortcuts"]:
-            print(f"  {MAGENTA}-{RESET} {shortcut}")
+            print(format_tip(shortcut))
         print()
     
     # Tips
