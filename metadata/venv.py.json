@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "environment",
+  "group": "system",
+  "desc": "Virtual environment manager - create, activate, and manage Python venvs",
+  "aliases": ["ve"]
+}

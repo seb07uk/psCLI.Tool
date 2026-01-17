@@ -13,7 +13,7 @@ class Color:
     YELLOW = '\033[93m'
     RED = '\033[91m'
     GRAY = '\033[90m'
-    WHITE = '\033[97m'  # Added to prevent "AttributeError"
+    WHITE = '\033[97m'
     BOLD = '\033[1m'
     RESET = '\033[0m'
 
@@ -30,33 +30,55 @@ def command(name=None, aliases=None):
         return func
     return decorator
 
-# --- DISPATCHER CLASS ---
+# --- DISPATCHER CLASS (TERMINAL CLI) ---
 class Dispatcher:
     def __init__(self, plugins_folder="plugins", metadata_folder="metadata"):
         self.root_dir = os.path.dirname(os.path.abspath(__file__))
-        self.plugins_path = os.path.join(self.root_dir, plugins_folder)
-        self.metadata_path = os.path.join(self.root_dir, metadata_folder)
+        self.settings_path = os.path.expandvars(r"%userprofile%\.polsoft\psCli\settings\terminal.json")
+        self.settings = self._load_settings()
+        
+        self.plugins_path = os.path.join(self.root_dir, self.settings.get("dispatcher", {}).get("plugins_folder", plugins_folder))
+        self.metadata_path = os.path.join(self.root_dir, self.settings.get("dispatcher", {}).get("metadata_folder", metadata_folder))
+        
         self.commands = {}
         self.aliases = {}
         self._prepare_env()
 
+    def _load_settings(self):
+        if os.path.exists(self.settings_path):
+            try:
+                with open(self.settings_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"{Color.RED}[ERROR] Could not load settings: {e}{Color.RESET}")
+        return {}
+
+    def _clear_screen(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+
     def _prepare_env(self):
-        """Creates necessary folders and files."""
         try:
-            for folder in [self.plugins_path, self.metadata_path]:
+            folders = [
+                self.plugins_path, 
+                self.metadata_path, 
+                os.path.dirname(self.settings_path),
+                os.path.expandvars(r"%userprofile%\.polsoft\psCli\Calculator")
+            ]
+            for folder in folders:
                 if not os.path.exists(folder):
                     os.makedirs(folder)
+
             init_file = os.path.join(self.plugins_path, "__init__.py")
             if not os.path.exists(init_file):
                 with open(init_file, "w", encoding="utf-8") as f:
                     f.write("# Init file\n")
+            
             if self.root_dir not in sys.path:
                 sys.path.insert(0, self.root_dir)
         except Exception as e:
-            print(f"{Color.RED}[FATAL] Could not prepare environment: {e}{Color.RESET}")
+            print(f"{Color.RED}[CRITICAL] Could not prepare environment: {e}{Color.RESET}")
 
     def _get_json_metadata(self, filename):
-        """Safely reads JSON metadata for external binaries."""
         meta = {"author": "System", "category": "utility", "group": "external", "desc": "No description", "aliases": []}
         meta_file = os.path.join(self.metadata_path, f"{filename}.json")
         if os.path.exists(meta_file):
@@ -66,15 +88,16 @@ class Dispatcher:
                     if isinstance(data, dict):
                         meta.update(data)
             except Exception as e:
-                print(f"{Color.RED}[ERROR] Metadata error in {filename}: {e}{Color.RESET}")
+                print(f"{Color.RED}[ERROR] Metadata {filename}: {e}{Color.RESET}")
         return meta
 
+    def get_all_groups(self):
+        return {str(f.meta.get('group', 'python')).lower() for f in self.commands.values()}
+
     def load_plugins(self):
-        """Loads all plugins from the plugins folder."""
         self.commands.clear()
         self.aliases.clear()
         if not os.path.exists(self.plugins_path):
-            print(f"{Color.RED}[ERROR] Plugins folder missing!{Color.RESET}")
             return
 
         for filename in os.listdir(self.plugins_path):
@@ -91,17 +114,17 @@ class Dispatcher:
                 elif ext in [".bat", ".cmd", ".ps1", ".exe", ".vbs"]:
                     self._register_external_binary(filename, name, ext, full_path)
             except Exception as e:
-                print(f"{Color.RED}[ERROR] Failed to load {filename}: {e}{Color.RESET}")
+                print(f"{Color.RED}[ERROR] Loading {filename}: {e}{Color.RESET}")
 
     def _load_python_module(self, name):
-        """Imports Python module and registers decorated functions."""
         try:
             mod_name = f"plugins.{name}"
             if mod_name in sys.modules:
                 del sys.modules[mod_name]
             
             module = importlib.import_module(mod_name)
-            module_meta = {
+            
+            base_meta = {
                 "author": getattr(module, "__author__", "Unknown"),
                 "category": getattr(module, "__category__", "general"),
                 "group": getattr(module, "__group__", "python"),
@@ -111,17 +134,23 @@ class Dispatcher:
             for _, obj in inspect.getmembers(module):
                 if inspect.isfunction(obj) and hasattr(obj, "is_command"):
                     cmd_name = getattr(obj, "command_name", _)
-                    if not module_meta["desc"]:
-                        module_meta["desc"] = (obj.__doc__ or "No description").strip().split('\n')[0]
-                    obj.meta = module_meta
+                    cmd_meta = base_meta.copy()
+                    
+                    doc = (obj.__doc__ or "").strip().split('\n')[0]
+                    if doc:
+                        cmd_meta["desc"] = doc
+                    elif not cmd_meta["desc"]:
+                        cmd_meta["desc"] = "No description"
+
+                    obj.meta = cmd_meta
                     self.commands[cmd_name] = obj
+                    
                     for alias in getattr(obj, "aliases", []):
                         self.aliases[alias] = cmd_name
         except Exception as e:
             print(f"{Color.RED}[ERROR] Module {name}.py: {e}{Color.RESET}")
 
     def _register_external_binary(self, filename, name, ext, path):
-        """Registers non-python files as commands."""
         meta = self._get_json_metadata(filename)
         def external_call(*args):
             cmd_args = ["powershell", "-ExecutionPolicy", "Bypass", "-File", path] if ext == ".ps1" else \
@@ -129,7 +158,7 @@ class Dispatcher:
             try:
                 subprocess.run(cmd_args + list(args), shell=(ext in [".bat", ".cmd"]), check=True)
             except Exception as e:
-                print(f"{Color.RED}[ERROR] Execution failed: {e}{Color.RESET}")
+                print(f"{Color.RED}[ERROR] Execution: {e}{Color.RESET}")
 
         external_call.is_command = True
         external_call.meta = meta
@@ -137,20 +166,37 @@ class Dispatcher:
         for alias in meta.get("aliases", []):
             self.aliases[alias] = name
 
-    def display_help(self):
-        """Displays formatted help table with group-based separators."""
-        if not self.commands:
-            print(f"{Color.YELLOW}[!] Command system is empty.{Color.RESET}")
+    def display_list(self, filter_group=None):
+        if self.settings.get("ui", {}).get("clear_on_menu", True):
+            self._clear_screen()
+            
+        all_cmds = self.commands.items()
+        
+        if filter_group:
+            filter_group = filter_group.lower()
+            cmds_to_show = [(n, f) for n, f in all_cmds if str(f.meta.get('group', '')).lower() == filter_group]
+            
+            if filter_group == "menu":
+                title = "TERMINAL CLI MENU (Type 'full' to see all available modules or a group name.)"
+            else:
+                title = f"GROUP VIEW: {filter_group.upper()}"
+        else:
+            cmds_to_show = [(n, f) for n, f in all_cmds if str(f.meta.get('group', '')).lower() != "menu"]
+            title = "ALL MODULES (HIDDEN: MENU)"
+
+        if not cmds_to_show:
+            print(f"{Color.RED}[!] No modules in group: {filter_group if filter_group else 'general'}.{Color.RESET}")
             return
 
-        w = {"group": 8, "cmd": 12, "desc": 40, "cat": 12}
-        
-        sorted_cmds = sorted(self.commands.items(), 
-                            key=lambda x: (str(x[1].meta.get('group', '')).lower(), 
-                                           str(x[1].meta.get('category', '')).lower(), 
-                                           x[0].lower()))
+        w = {"group": 10, "cmd": 15, "desc": 45, "cat": 12}
+        sorted_cmds = sorted(cmds_to_show, key=lambda x: (
+            str(x[1].meta.get('group', '')).lower(), 
+            str(x[1].meta.get('category', '')).lower(), 
+            x[0].lower()
+        ))
 
-        print(f"\n{Color.CYAN}{Color.BOLD}ROOT:{Color.RESET} {Color.GRAY}{self.root_dir}{Color.RESET}")
+        print(f"{Color.CYAN}{Color.BOLD}{title}{Color.RESET}")
+        
         header = f"{'GROUP':<{w['group']}} | {'COMMAND':<{w['cmd']}} | {'DESCRIPTION':<{w['desc']}} | {'CATEGORY':<{w['cat']}} | ALIASES"
         sep_width = len(header) + 12
         full_line = f"{Color.GRAY}{'-' * sep_width}{Color.RESET}"
@@ -161,8 +207,7 @@ class Dispatcher:
         for name, func in sorted_cmds:
             m = func.meta
             curr_group = str(m.get('group', 'python')).lower()
-            
-            if last_group is not None and last_group != curr_group:
+            if last_group is not None and last_group != curr_group and not filter_group:
                 print(f"{Color.GRAY}{'-' * sep_width}{Color.RESET}")
             last_group = curr_group
 
@@ -174,11 +219,9 @@ class Dispatcher:
                   f"{desc:<{w['desc']}} {Color.GRAY}|{Color.RESET} "
                   f"{Color.CYAN}{str(m.get('category')):<{w['cat']}}{Color.RESET} {Color.GRAY}|{Color.RESET} "
                   f"{Color.YELLOW}{aliases}{Color.RESET}")
-        
         print(full_line + "\n")
 
     def execute(self, trigger, *args):
-        """Executes the command or its alias."""
         target = self.aliases.get(trigger, trigger)
         if target in self.commands:
             try:
@@ -186,36 +229,52 @@ class Dispatcher:
             except Exception as e:
                 print(f"{Color.RED}[RUNTIME ERROR] '{trigger}': {e}{Color.RESET}")
         else:
-            print(f"{Color.RED}[?] Unknown command: '{trigger}'{Color.RESET}")
+            print(f"{Color.RED}[?] Unknown command or group: '{trigger}'{Color.RESET}")
 
+# --- EXECUTION ---
 if __name__ == "__main__":
     cli = Dispatcher()
     cli.load_plugins()
     
     if len(sys.argv) < 2:
-        cli.display_help()
+        groups = cli.get_all_groups()
+        if "menu" in groups:
+            cli.display_list("menu")
+        else:
+            cli.display_list() 
+            
         while True:
             try:
-                prompt = f"{Color.CYAN}{os.path.basename(cli.root_dir)}{Color.RESET} > "
+                prompt_fmt = cli.settings.get("ui", {}).get("default_prompt", "{root_dir} > ")
+                prompt_text = prompt_fmt.format(root_dir=os.path.basename(cli.root_dir))
+                prompt = f"{Color.CYAN}{prompt_text}{Color.RESET}"
+                
                 user_input = input(prompt).strip().split()
                 if not user_input: continue
                 
                 cmd = user_input[0].lower()
+                args = user_input[1:]
                 
-                # Handling built-in commands
                 if cmd in ["exit", "quit"]: break
-                if cmd in ["help", "?"]: 
-                    cli.display_help()
+                
+                if cmd == "full":
+                    cli.display_list()
                     continue
+
                 if cmd in ["reload", "r"]: 
+                    cli.settings = cli._load_settings()
                     cli.load_plugins()
-                    cli.display_help()
+                    groups = cli.get_all_groups()
+                    cli.display_list("menu" if "menu" in groups else None)
+                    continue
+
+                if cmd in cli.get_all_groups():
+                    cli.display_list(cmd)
                     continue
                 
-                # Execute registered commands or aliases
-                cli.execute(cmd, *user_input[1:])
+                cli.execute(cmd, *args)
+
             except (EOFError, KeyboardInterrupt):
-                print(f"\n{Color.YELLOW}[!] Closing session...{Color.RESET}")
                 break
     else:
         cli.execute(sys.argv[1], *sys.argv[2:])

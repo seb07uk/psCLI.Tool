@@ -12,7 +12,7 @@ from cli import command, Color
 
 __author__ = "Sebastian Januchowski"
 __category__ = "web browser"
-__group__ = "network"
+__group__ = "office"
 __desc__ = "psBrowser CLI: Full Suite with History & Quick Links"
 
 # --- PATH CONFIGURATION ---
@@ -126,7 +126,7 @@ def show_about():
     print("-" * 30)
     input("\nPress Enter to continue...")
 
-@command(name="browse", aliases=["web", "www"])
+@command(name="browser", aliases=["web", "www"])
 def browse(url=None):
     """psBrowser CLI: [Nr] Link, [S(nr)] Search, [h] History, [snap] Screenshot, [u] Back."""
     history_stack = []
