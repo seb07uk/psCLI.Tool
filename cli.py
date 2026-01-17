@@ -30,7 +30,7 @@ def command(name=None, aliases=None):
         return func
     return decorator
 
-# --- DISPATCHER CLASS (TERMINAL CLI) ---
+# --- DISPATCHER CLASS (2026© Terminal psCLI) ---
 class Dispatcher:
     def __init__(self, plugins_folder="plugins", metadata_folder="metadata"):
         self.root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -177,7 +177,7 @@ class Dispatcher:
             cmds_to_show = [(n, f) for n, f in all_cmds if str(f.meta.get('group', '')).lower() == filter_group]
             
             if filter_group == "menu":
-                title = "TERMINAL CLI MENU (Type 'full' to see all available modules or a group name.)"
+                title = "2026© Terminal psCLI MENU (Type 'all' to see all available modules or a group name.)"
             else:
                 title = f"GROUP VIEW: {filter_group.upper()}"
         else:
@@ -257,7 +257,7 @@ if __name__ == "__main__":
                 
                 if cmd in ["exit", "quit"]: break
                 
-                if cmd == "full":
+                if cmd == "all":
                     cli.display_list()
                     continue
 
