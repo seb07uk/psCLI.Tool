@@ -1,7 +1,7 @@
 {
   "author": "Abdullah Ertürk, mephistooo2, Dark Vador, Windows_Addict",
-  "category": "activation",
-  "group": "microsoft",
+  "category": "microsoft",
+  "group": "activator",
   "desc": "PowerShell Multi Activation System - Windows activation tool",
   "aliases": ["pmas", "activate"]
 }
