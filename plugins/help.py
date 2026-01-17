@@ -66,7 +66,7 @@ PLUGINS_DB = {
         "name": "cd",
         "category": "file system",
         "description": "Changes the current working directory with support for shortcuts and environment variables",
-        "aliases": ["chdir"],
+        "aliases": ["chdir", "jump"],
         "syntax": ["cd <path>", "cd ..", "cd ~", "cd -", "cd %VAR%"],
         "examples": [
             ("cd plugins", "Enter the plugins folder"),
@@ -82,7 +82,7 @@ PLUGINS_DB = {
         "name": "pwd",
         "category": "file system",
         "description": "Professional Directory Auditor & Path Telemetry Tool - displays comprehensive directory analysis",
-        "aliases": ["where", "pwd"],
+        "aliases": ["path", "where"],
         "syntax": ["pwd [path]", "where [path]"],
         "examples": [
             ("pwd", "Analyze current directory"),
@@ -142,7 +142,7 @@ PLUGINS_DB = {
     
     "calculator": {
         "name": "calculator",
-        "category": "mathematics",
+        "category": "math",
         "description": "Professional scientific calculator with history logging and mathematical functions",
         "aliases": ["calc", "math"],
         "syntax": ["calculator", "calc", "math"],
@@ -200,7 +200,7 @@ PLUGINS_DB = {
     "browse": {
         "name": "browse",
         "category": "web browser",
-        "description": "Full-featured CLI web browser with history, cookies, and screenshot functionality",
+        "description": "psBrowser CLI: Full Suite with History & Quick Links - Full-featured CLI web browser with history, cookies, and screenshot functionality",
         "aliases": ["web", "browser"],
         "syntax": ["browse [url]", "web [url]"],
         "features": [
@@ -315,7 +315,7 @@ PLUGINS_DB = {
     
     "paint": {
         "name": "paint",
-        "category": "graphics",
+        "category": "paint cli",
         "description": "Paint application for drawing in terminal - ASCII art creation with multiple colors",
         "aliases": ["draw", "art"],
         "syntax": ["paint", "draw"],
@@ -336,6 +336,70 @@ PLUGINS_DB = {
         "examples": [("paint", "Launch paint application")],
         "tips": ["Arrow keys for navigation", "Select color from palette", "Save your creations"],
         "storage": r"%userprofile%\.polsoft\psCli\Paint"
+    },
+    
+    "hack": {
+        "name": "hack",
+        "category": "hacking",
+        "description": "Hacking Tools - dynamic launcher for system tools",
+        "aliases": ["tools", "exploit"],
+        "syntax": ["hack", "hack <tool_name>"],
+        "features": [
+            "Dynamic system tools launcher",
+            "Metadata-driven tool management",
+            "Tool categorization and organization",
+            "Easy tool execution",
+            "Tool information display"
+        ],
+        "examples": [
+            ("hack", "Show available tools"),
+            ("hack pmas", "Execute PMAS activation tool"),
+            ("hack Office_365", "Execute Office 365 batch script")
+        ],
+        "tips": ["Tools are loaded from /tools/ directory", "Metadata stored in /metadata/", "Easy integration of new tools"],
+        "storage": r"v:\tools"
+    },
+    
+    "pmas": {
+        "name": "pmas",
+        "category": "activation",
+        "description": "PowerShell Multi Activation System - Windows activation tool",
+        "aliases": ["activate"],
+        "syntax": ["pmas"],
+        "authors": ["Abdullah Ertürk", "mephistooo2", "Dark Vador", "Windows_Addict"],
+        "features": [
+            "Windows activation",
+            "Multi-activation system",
+            "PowerShell-based automation",
+            "Secure script verification"
+        ],
+        "examples": [
+            ("pmas", "Launch PowerShell Multi Activation System"),
+            ("activate", "Quick activation tool (alias)")
+        ],
+        "tips": ["Requires administrator privileges", "Script includes integrity verification", "Supports multiple languages"],
+        "group": "microsoft"
+    },
+
+    "office_365": {
+        "name": "office_365",
+        "category": "microsoft",
+        "description": "Microsoft Office 365 installation and activation tool",
+        "aliases": ["ms365", "msoffice"],
+        "syntax": ["office_365.bat"],
+        "features": [
+            "Office 365 deployment",
+            "Automatic download and extraction",
+            "Configuration-based installation",
+            "64-bit Office support"
+        ],
+        "examples": [
+            ("office_365.bat", "Install Microsoft Office 365"),
+            ("ms365", "Quick launch (alias)")
+        ],
+        "tips": ["Downloads Office Deployment Tool automatically", "Requires internet connection", "Creates configuration files dynamically"],
+        "group": "microsoft",
+        "requires": "Administrator privileges, Internet connection"
     }
 }
 
@@ -443,6 +507,11 @@ def _display_command_help(cmd_name):
         aliases_str = ", ".join(f"{GREEN}{a}{RESET}" for a in info["aliases"])
         print(f"{YELLOW}Aliases:{RESET} {aliases_str}\n")
     
+    # Authors if available
+    if "authors" in info and info["authors"]:
+        authors_str = ", ".join(info["authors"])
+        print(f"{YELLOW}Authors:{RESET} {authors_str}\n")
+    
     # Syntax
     print(format_section("Syntax"))
     for syntax_line in info['syntax']:
@@ -514,6 +583,9 @@ def _display_command_help(cmd_name):
     
     if "automation" in info:
         print(f"{GRAY}AUTOMATION:{RESET} {info['automation']}")
+    
+    if "requires" in info:
+        print(f"{GRAY}REQUIREMENTS:{RESET} {info['requires']}")
     
     # Available games
     if "available_games" in info:
