@@ -11,7 +11,7 @@ from cli import command, Color
 __author__ = "Sebastian Januchowski"
 __category__ = "hacking"
 __group__ = "menu"
-__desc__ = "Hacking Tools - dynamic launcher for system tools"
+__desc__ = "Hacking Tools - Avoid the limits"
 
 TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
 METADATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "metadata"))
@@ -58,7 +58,7 @@ def get_metadata(filename):
 
 @command(name="hack", aliases=["tools", "hacking"])
 def hack_dispatcher(*args):
-    """Dynamiczny launcher dla narzędzi z katalogu /tools/."""
+    """Hacking Tools - Avoid the limits."""
     
     SUPPORTED_EXTENSIONS = (".py", ".bat", ".cmd", ".ps1", ".exe", ".vbs")
     
