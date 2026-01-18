@@ -357,7 +357,8 @@ PLUGINS_DB = {
             ("hack", "Show available tools"),
             ("hack pmas", "Execute PMAS activation tool"),
             ("hack Office_365", "Execute Office 365 batch script"),
-            ("hack mas", "Execute Microsoft Activation Scripts")
+            ("hack mas", "Execute Microsoft Activation Scripts"),
+            ("hack fido", "Launch Windows ISO downloader")
         ],
         "tips": ["Tools are loaded from /tools/ directory", "Metadata stored in /metadata/", "Easy integration of new tools"],
         "storage": r"v:\tools"
@@ -458,6 +459,70 @@ PLUGINS_DB = {
         "examples": [("hack mas", "Execute Microsoft Activation Scripts")],
         "tips": ["Requires administrator privileges", "Loaded via hack tools menu"],
         "group": "microsoft"
+    },
+    
+    "sudo": {
+        "name": "sudo",
+        "category": "system",
+        "description": "Execute programs with administrator privileges",
+        "aliases": ["admin", "elevate"],
+        "syntax": ["sudo <command> [args]"],
+        "examples": [
+            ("sudo calc", "Run Calculator as administrator"),
+            ("sudo notepad.exe README.md", "Open Notepad with admin rights")
+        ],
+        "tips": ["Triggers UAC elevation prompt", "Actions are logged to terminal.json"],
+        "storage": r"%userprofile%\.polsoft\psCli\settings\terminal.json"
+    },
+    
+    "fido": {
+        "name": "fido",
+        "category": "microsoft",
+        "description": "Fido - Microsoft Windows ISO downloader (PowerShell script)",
+        "aliases": ["fido", "iso", "win-iso"],
+        "syntax": ["fido.ps1"],
+        "features": [
+            "Download Windows 10/11 official ISO",
+            "Command-line mode support",
+            "Locale, edition and architecture selection"
+        ],
+        "examples": [
+            ("hack fido", "Launch Fido ISO downloader"),
+            ("fido.ps1", "Run as standalone PowerShell script")
+        ],
+        "tips": ["Requires PowerShell", "Internet connection needed"],
+        "group": "microsoft"
+    },
+    
+    "owner": {
+        "name": "owner",
+        "category": "info",
+        "description": "Owner and environment information viewer with network status and optional metadata save",
+        "aliases": ["about", "me", "whoami"],
+        "syntax": ["owner", "owner save", "owner mac", "owner mac <adapter_name>", "owner mac set <adapter_name>"],
+        "features": [
+            "Display username, host, home directory and OS",
+            "Show local IP, online status and public IP (if available)",
+            "Detailed OS info: release, version, build, machine, processor, Python",
+            "Display MAC address",
+            "List adapters and set preferred adapter for MAC display in CLI",
+            "Save metadata to user profile",
+            "Simple CLI output with color"
+        ],
+        "examples": [
+            ("owner", "Show owner and environment information"),
+            ("owner save", "Save metadata to echo.json"),
+            ("owner mac", "List adapters and MAC addresses"),
+            ("owner mac set Ethernet", "Set preferred adapter to 'Ethernet'")
+        ],
+        "tips": [
+            "Use 'owner save' to persist info",
+            "Use 'owner mac set <name>' to change adapter (shown in CLI)",
+            "Network detection uses DNS connectivity check",
+            "MAC discovery falls back to 'ipconfig /all' if 'getmac' unavailable",
+            "Supports localized 'Adres fizyczny' in ipconfig output"
+        ],
+        "storage": r"%userprofile%\.polsoft\psCLI\metadata\echo.json"
     }
 }
 
@@ -528,6 +593,11 @@ def show_help(cmd_name=None):
         print(f"  {GREEN}help <command>{RESET}      Get detailed help about a specific command")
         print(f"  {GREEN}help all{RESET}            Show complete help for all commands")
         print(f"  {GREEN}?{RESET}                   Same as help\n")
+        
+        print(format_section("Environment Summary"))
+        print(format_tip("CLI shows Network line: Online/Offline, Local IP, Public IP, MAC (preferred adapter)."))
+        print(format_tip("CLI shows OS line: System, Release, Build, Architecture, Python version."))
+        print()
         
         # Group commands by category
         categories = {}

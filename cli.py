@@ -4,8 +4,13 @@ import subprocess
 import inspect
 import importlib
 import json
+import socket
+import urllib.request
+import platform
 
-# --- ANSI COLOR CONFIGURATION ---
+from plugins import owner
+
+
 class Color:
     BLUE = '\033[94m'
     CYAN = '\033[96m'
@@ -43,6 +48,34 @@ class Dispatcher:
         self.commands = {}
         self.aliases = {}
         self._prepare_env()
+
+    def _local_ip(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            ip = s.getsockname()[0]
+            s.close()
+            return ip
+        except:
+            try:
+                return socket.gethostbyname(socket.gethostname())
+            except:
+                return None
+
+    def _is_online(self):
+        try:
+            socket.create_connection(("1.1.1.1", 53), timeout=2).close()
+            return True
+        except:
+            return False
+
+    def _public_ip(self):
+        try:
+            with urllib.request.urlopen("https://api.ipify.org?format=json", timeout=3) as r:
+                data = json.loads(r.read().decode("utf-8"))
+                return data.get("ip")
+        except:
+            return None
 
     def _load_settings(self):
         if os.path.exists(self.settings_path):
@@ -196,6 +229,32 @@ class Dispatcher:
         ))
 
         print(f"{Color.CYAN}{Color.BOLD}{title}{Color.RESET}")
+        try:
+            owner_mod = importlib.import_module("plugins.owner")
+            ni = owner_mod.get_network_info()
+            online = bool(ni.get("online"))
+            local_ip = ni.get("local_ip")
+            public_ip = ni.get("public_ip")
+            mac = owner_mod.get_preferred_mac() or ni.get("mac")
+        except Exception:
+            online = self._is_online()
+            local_ip = self._local_ip()
+            public_ip = self._public_ip() if online else None
+            mac = None
+        net_line = f"Network: {'Online' if online else 'Offline'}"
+        if local_ip: net_line += f" | Local IP: {local_ip}"
+        if public_ip: net_line += f" | Public IP: {public_ip}"
+        if mac: net_line += f" | MAC: {mac}"
+        print(f"{Color.GRAY}{net_line}{Color.RESET}")
+        try:
+            oi = owner_mod.get_os_info()
+            os_line = f"OS: {oi.get('system')} {oi.get('release')}"
+            if oi.get('build'): os_line += f" | Build: {oi.get('build')}"
+            os_line += f" | Arch: {oi.get('machine')}"
+            os_line += f" | Python: {oi.get('python_version')}"
+        except Exception:
+            os_line = f"OS: {platform.system()} {platform.release()} | Python: {sys.version.split()[0]}"
+        print(f"{Color.GRAY}{os_line}{Color.RESET}")
         
         header = f"{'GROUP':<{w['group']}} | {'COMMAND':<{w['cmd']}} | {'DESCRIPTION':<{w['desc']}} | {'CATEGORY':<{w['cat']}} | ALIASES"
         sep_width = len(header) + 12
