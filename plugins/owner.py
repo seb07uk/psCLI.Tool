@@ -14,8 +14,8 @@ import csv
 import re
 
 __author__ = "Sebastian Januchowski"
-__category__ = "info"
-__group__ = "hack"
+__category__ = "user info"
+__group__ = "system"
 __desc__ = "Owner and environment information"
 
 def get_os_info():

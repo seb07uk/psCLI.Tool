@@ -1,0 +1,7 @@
+{
+  "author": "Microsoft",
+  "category": "editor",
+  "group": "office",
+  "desc": "Edit - terminal text editor (external binary)",
+  "aliases": ["edit", "ed"]
+}

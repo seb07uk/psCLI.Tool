@@ -62,7 +62,12 @@ psCLI.Tool/
 │   ├── dir.py                     # Directory listing
 │   ├── save.py                    # File saving utilities
 │   ├── venv.py                    # Virtual environment management
+│   ├── ascii.py                   # ASCII Center launcher
+│   ├── owner.py                   # Owner & environment info
+│   ├── sudo.py                    # Run with admin privileges
 │   └── __pycache__/               # Python cache directory
+├── ascii/                         # ASCII assets launched by ascii.py
+│   └── parrot.cmd                 # Parrot colorful ASCII animation
 ├── tools/                         # External tools launched via 'hack'
 │   ├── MAS.cmd                    # Microsoft Activation Scripts
 │   ├── Office_365.bat             # Office 365 installer/activator
@@ -75,7 +80,10 @@ psCLI.Tool/
 │   ├── venv.py.json               # Virtual environment settings
 │   ├── MAS.cmd.json               # MAS tool metadata
 │   ├── Office_365.bat.json        # Office 365 tool metadata
-│   └── pmas.cmd.json              # PMAS tool metadata
+│   ├── pmas.cmd.json              # PMAS tool metadata
+│   ├── fido.ps1.json              # Fido ISO downloader metadata
+│   ├── edit.exe.json              # Edit external editor metadata
+│   └── parrot.cmd.json            # Parrot ASCII asset metadata
 └── __pycache__/                   # Python cache directory
 ```
 
@@ -126,10 +134,12 @@ This displays the main menu with available command groups.
 
 ```
 psCLI.Tool > help                    # Show comprehensive help
-psCLI.Tool > full                    # Show all available commands
+psCLI.Tool > all                     # Show all available commands
 psCLI.Tool > core                    # View core system modules
 psCLI.Tool > calculator              # Launch scientific calculator
 psCLI.Tool > games                   # Start games center
+psCLI.Tool > ascii                   # Open ASCII Center
+psCLI.Tool > owner                   # Show owner & environment info
 psCLI.Tool > reload                  # Reload plugins (hot reload)
 psCLI.Tool > exit                    # Exit the CLI
 ```
@@ -153,6 +163,7 @@ python cli.py help
 | `help` | `h` | Professional help system for all available plugins |
 | `core` | `sys`, `base` | Core system modules viewer |
 | `games` | `play`, `g` | Games center with Tic-Tac-Toe, Snake, Rock-Paper-Scissors |
+| `ascii` | `art`, `a` | ASCII Center launcher for animations and scripts |
 
 ### Office Group Commands
 
@@ -164,6 +175,7 @@ python cli.py help
 | `print` | `cat`, `type` | Print file contents with highlighting |
 | `browser` | `web`, `www` | Launch CLI web browser |
 | `office` | `docs`, `work` | Microsoft Office utilities launcher |
+| `edit` | `ed` | Terminal text editor (external binary) |
 
 ### System Group Commands
 
@@ -174,6 +186,8 @@ python cli.py help
 | `cd` | `chdir`, `jump` | Change directory |
 | `dir` | `ls`, `list` | List directory contents |
 | `echo` | `say`, `repeat`, `e` | Echo text to console |
+| `owner` | `about`, `me`, `whoami` | Owner information and environment summary |
+| `sudo` | `admin`, `elevate` | Run processes with administrator privileges |
 
 ### Utility Group Commands
 
@@ -217,6 +231,15 @@ __group__ = "menu|core|office|utility"
 __desc__ = "Short description of the plugin"
 __version__ = "1.0.0"
 ```
+
+### External Asset & Tool Metadata Mapping
+
+- External commands and assets are registered via JSON metadata files placed in `metadata/`
+- Naming convention: `metadata/<filename>.<ext>.json` matches a file in `plugins/`, `ascii/`, or `tools/`
+- Examples:
+  - `metadata/parrot.cmd.json` → `ascii/parrot.cmd`
+  - `metadata/edit.exe.json` → `plugins/edit.exe`
+  - `metadata/fido.ps1.json` → `tools/fido.ps1`
 
 ## Creating Custom Plugins
 
@@ -391,6 +414,50 @@ Interactive file list generator with global settings sync:
 psCLI.Tool > lg2txt
 ```
 
+### ASCII Center (`ascii.py`)
+
+Launcher for ASCII animations and scripts:
+
+```bash
+psCLI.Tool > ascii
+ascii parrot
+```
+
+**Features:**
+- Scans the `/ascii` folder
+- Supports `.cmd`, `.bat`, `.ps1`, `.vbs`, `.exe`, `.py`
+- Launches assets in a new console window
+- Loads descriptions from matching JSON files in `metadata/`
+
+### Owner (`owner.py`)
+
+Owner and environment information:
+
+```bash
+psCLI.Tool > owner
+psCLI.Tool > owner mac
+psCLI.Tool > owner mac set Ethernet
+```
+
+**Features:**
+- Username, host, home, and OS details
+- Network status (online/offline), local IP, public IP
+- MAC address display with preferred adapter selection
+- OS details: release, build, architecture, Python version
+
+### Sudo (`sudo.py`)
+
+Run commands with administrator privileges:
+
+```bash
+psCLI.Tool > sudo calc
+psCLI.Tool > sudo notepad.exe README.md
+```
+
+**Notes:**
+- Triggers UAC prompt
+- Actions can be logged in `terminal.json`
+
 ## Games
 
 The games center provides three terminal-based games:
@@ -423,6 +490,7 @@ External tools available via the hack menu:
 - `MAS.cmd` — Microsoft Activation Scripts
 - `pmas.cmd` — PowerShell Multi Activation System
 - `Office_365.bat` — Office 365 installer/activator
+- `fido.ps1` — Microsoft Windows ISO downloader
 
 Usage:
 ```bash
@@ -430,6 +498,7 @@ psCLI.Tool > hack
 hack mas
 hack pmas
 hack Office_365
+hack fido
 ```
 
 ## Development
@@ -483,4 +552,4 @@ copies or substantial portions of the Software.
 ---
 
 **Version**: 3.0.0  
-**Last Updated**: January 17, 2026
+**Last Updated**: January 18, 2026

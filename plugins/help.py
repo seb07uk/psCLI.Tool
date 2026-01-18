@@ -276,6 +276,32 @@ PLUGINS_DB = {
         "tips": ["Press [q] to quit any game", "Games are fully interactive", "High scores may be tracked"]
     },
     
+    "ascii": {
+        "name": "ascii",
+        "category": "ascii art",
+        "description": "ASCII Center - launcher for ASCII animations and scripts from the /ascii folder",
+        "aliases": ["art", "a"],
+        "syntax": ["ascii", "ascii <asset_name>", "ascii <ID>"],
+        "features": [
+            "Scans the /ascii folder",
+            "Supports .cmd, .bat, .ps1, .vbs, .exe, .py",
+            "Launches in a new console window",
+            "Descriptions loaded from metadata files in /metadata"
+        ],
+        "examples": [
+            ("ascii", "Show the list of available assets"),
+            ("ascii parrot", "Launch the Parrot animation"),
+            ("ascii 1", "Launch the asset with ID 1")
+        ],
+        "tips": [
+            "Type the asset name or ID",
+            "For .cmd/.bat scripts, cmd /c is used",
+            "For .ps1, PowerShell with Bypass is used",
+            "Add descriptions in metadata/<filename>.json"
+        ],
+        "storage": r"%userprofile%\.polsoft\psCLI\ascii"
+    },
+    
     "core": {
         "name": "core",
         "category": "system",
@@ -443,6 +469,26 @@ PLUGINS_DB = {
         "examples": [("lg2txt", "Open interactive list generator")],
         "tips": ["Change source/output paths from menu", "Logs written to List.log"],
         "storage": r"%userprofile%\.polsoft\psCLI\Log\List.log"
+    },
+    
+    "edit": {
+        "name": "edit",
+        "category": "editor",
+        "description": "Edit - terminal text editor (external binary)",
+        "aliases": ["ed"],
+        "syntax": ["edit"],
+        "features": [
+            "Runs as an external binary",
+            "Integrated via metadata file edit.exe.json",
+            "Quick editing of text files"
+        ],
+        "examples": [
+            ("edit", "Launch the text editor in terminal")
+        ],
+        "tips": [
+            "Requires edit.exe to be available in plugins/",
+            "Alias: ed"
+        ]
     },
     
     "mas": {
