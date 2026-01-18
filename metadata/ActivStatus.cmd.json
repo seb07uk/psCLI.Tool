@@ -1,0 +1,7 @@
+{
+  "author": "Unknown",
+  "category": "microsoft",
+  "group": "checker",
+  "desc": "Windows activation status checker (CMD batch script)",
+  "aliases": ["activstatus", "stats"]
+}

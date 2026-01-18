@@ -1,7 +1,7 @@
 {
   "author": "Sebastian Januchowski",
-  "category": "ascii art",
+  "category": "animation",
   "group": "ascii",
   "desc": "Parrot - colorful ASCII animation (CMD)",
-  "aliases": ["parrot", "bird"]
+  "aliases": ["parrot"]
 }

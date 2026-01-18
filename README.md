@@ -1,101 +1,108 @@
-# psCLI.Tool - Professional Terminal CLI Framework
+# 🚀 psCLI.Tool - Professional Terminal CLI Framework
 
-> A sophisticated, extensible command-line interface framework for Windows with plugin architecture, dynamic command loading, and comprehensive help system.
+> ✨ **A sophisticated, extensible command-line interface framework for Windows** with plugin architecture, dynamic command loading, and comprehensive help system.
+>
+> *Transform your terminal into a powerful development environment with professional-grade tools, games, and utilities.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/Python-3.7%2B-blue)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D4)](https://www.microsoft.com/en-us/windows)
 
-## Table of Contents
+---
 
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Installation & Setup](#installation--setup)
-- [Quick Start](#quick-start)
-- [Available Commands](#available-commands)
-- [Plugin Architecture](#plugin-architecture)
-- [Creating Custom Plugins](#creating-custom-plugins)
-- [Configuration](#configuration)
-- [Built-in Plugins](#built-in-plugins)
-- [Games](#games)
-- [Tools](#tools)
-- [License](#license)
+## 📋 Table of Contents
 
-## Features
+- [✨ Features](#-features)
+- [📁 Project Structure](#-project-structure)
+- [⚙️ Installation & Setup](#️-installation--setup)
+- [🎯 Quick Start](#-quick-start)
+- [📖 Available Commands](#-available-commands)
+- [🔌 Plugin Architecture](#-plugin-architecture)
+- [🛠️ Creating Custom Plugins](#️-creating-custom-plugins)
+- [⚡ Configuration](#-configuration)
+- [📚 Built-in Plugins](#-built-in-plugins)
+- [🎮 Games](#-games)
+- [🔧 Tools](#-tools)
+- [📄 License](#-license)
 
-✨ **Core Features:**
+---
 
-- 🔌 **Plugin-Based Architecture** - Dynamically load Python modules, PowerShell scripts, batch files, and executables
-- 🎨 **ANSI Color Support** - Rich, colorized terminal output with themed commands
-- ⚡ **Command Aliasing** - Define aliases for frequently used commands
-- 📚 **Professional Help System** - Comprehensive documentation and usage examples for all commands
-- 📘 **Adaptive Help Output** - Line wrapping based on terminal width for readability
-- 🎮 **Integrated Games** - Built-in terminal games (Tic-Tac-Toe, Snake, Rock-Paper-Scissors)
-- 📊 **Calculator & Tools** - Scientific calculator with history logging
-- 🔧 **Metadata System** - JSON-based configuration for plugin metadata
-- 📝 **Settings Management** - Centralized configuration via JSON settings file
-- 🔄 **Hot Reload** - Reload plugins without restarting the CLI
+## ✨ Features
 
-## Project Structure
+### 🎯 Core Capabilities
+
+- 🔌 **Plugin-Based Architecture** — Dynamically load Python modules, PowerShell scripts, batch files, and executables
+- 🎨 **ANSI Color Support** — Rich, colorized terminal output with themed commands and professional styling
+- ⚡ **Command Aliasing** — Define aliases for frequently used commands for quick access
+- 📚 **Professional Help System** — Comprehensive documentation and usage examples for all commands
+- 📘 **Adaptive Help Output** — Line wrapping based on terminal width for optimal readability
+- 🎮 **Integrated Games** — Built-in terminal games (Tic-Tac-Toe, Snake, Rock-Paper-Scissors)
+- 📊 **Scientific Calculator** — Advanced calculator with history logging and complex functions
+- 🔧 **Metadata System** — JSON-based configuration for plugin metadata
+- 📝 **Settings Management** — Centralized configuration via JSON settings file
+- 🔄 **Hot Reload** — Reload plugins without restarting the CLI
+
+---
+
+## 📁 Project Structure
 
 ```
 psCLI.Tool/
-├── cli.py                          # Main CLI dispatcher and core framework
-├── README.md                       # This file
-├── plugins/                        # Plugin modules directory
+├── cli.py                          # 🚀 Main CLI dispatcher and core framework
+├── README.md                       # 📖 This file
+├── plugins/                        # 🔌 Plugin modules directory
 │   ├── __init__.py                # Package initialization
 │   ├── core.py                    # Core system plugin viewer
-│   ├── help.py                    # Professional help system
-│   ├── calculator.py              # Scientific calculator with history
-│   ├── games.py                   # Games center launcher
-│   ├── browser.py                 # Browser launcher
-│   ├── notepad.py                 # Text editor launcher
-│   ├── paint.py                   # Paint application launcher
-│   ├── office.py                  # MS Office suite launcher
-│   ├── file.py                    # CMD File Manager CLI
-│   ├── lg2txt.py                  # File list generator
-│   ├── echo.py                    # Echo/print utilities
-│   ├── print.py                   # Print file operations
-│   ├── cls.py                     # Clear screen command
-│   ├── pwd.py                     # Print working directory
-│   ├── cd.py                      # Change directory
-│   ├── dir.py                     # Directory listing
-│   ├── save.py                    # File saving utilities
-│   ├── venv.py                    # Virtual environment management
-│   ├── ascii.py                   # ASCII Center launcher
-│   ├── owner.py                   # Owner & environment info
-│   ├── sudo.py                    # Run with admin privileges
+│   ├── help.py                    # 📚 Professional help system
+│   ├── calculator.py              # 🧮 Scientific calculator with history
+│   ├── games.py                   # 🎮 Games center launcher
+│   ├── browser.py                 # 🌐 Browser launcher
+│   ├── notepad.py                 # 📝 Text editor launcher
+│   ├── paint.py                   # 🎨 Paint application launcher
+│   ├── office.py                  # 📊 MS Office suite launcher
+│   ├── file.py                    # 📁 File Manager CLI
+│   ├── lg2txt.py                  # 📋 File list generator
+│   ├── echo.py                    # 🔊 Echo/print utilities
+│   ├── print.py                   # 🖨️ Print file operations
+│   ├── cls.py                     # 🧹 Clear screen command
+│   ├── pwd.py                     # 📍 Print working directory
+│   ├── cd.py                      # 🚪 Change directory
+│   ├── dir.py                     # 📂 Directory listing
+│   ├── save.py                    # 💾 File saving utilities
+│   ├── venv.py                    # 🐍 Virtual environment management
+│   ├── ascii.py                   # 🎭 ASCII Center launcher
+│   ├── installer.py               # 📦 Installers Manager
+│   ├── owner.py                   # 👤 Owner & environment info
+│   ├── sudo.py                    # 🔐 Run with admin privileges
 │   └── __pycache__/               # Python cache directory
-├── ascii/                         # ASCII assets launched by ascii.py
-│   └── parrot.cmd                 # Parrot colorful ASCII animation
-├── tools/                         # External tools launched via 'hack'
-│   ├── MAS.cmd                    # Microsoft Activation Scripts
+├── ascii/                         # 🎪 ASCII assets launched by ascii.py
+│   └── parrot.cmd                 # 🦜 Parrot colorful ASCII animation
+├── tools/                         # 🔧 External tools launcher
+│   ├── MAS.cmd                    # Windows activation scripts
 │   ├── Office_365.bat             # Office 365 installer/activator
 │   └── pmas.cmd                   # PowerShell Multi Activation System
-├── games/                         # Standalone game modules
+├── games/                         # 🎯 Standalone game modules
 │   ├── Tic-Tac-Toe.py            # Tic-Tac-Toe game
 │   ├── Snake CLI.py               # Snake game
+│   ├── Tetris Mini.py             # Tetris game
+│   ├── Racer CLI.py               # Racer game
 │   └── Rock-Paper-Scissors.py     # Rock-Paper-Scissors game
-├── metadata/                      # Metadata and configuration
-│   ├── venv.py.json               # Virtual environment settings
-│   ├── MAS.cmd.json               # MAS tool metadata
-│   ├── Office_365.bat.json        # Office 365 tool metadata
-│   ├── pmas.cmd.json              # PMAS tool metadata
-│   ├── fido.ps1.json              # Fido ISO downloader metadata
-│   ├── edit.exe.json              # Edit external editor metadata
-│   └── parrot.cmd.json            # Parrot ASCII asset metadata
+├── metadata/                      # ⚙️ Metadata and configuration
+│   └── *.json                     # Plugin configuration files
 └── __pycache__/                   # Python cache directory
 ```
 
-## Installation & Setup
+---
 
-### Requirements
+## ⚙️ Installation & Setup
 
-- **Python 3.7+**
-- **Windows OS** (PowerShell support for advanced features)
-- **ANSI color support** (enabled automatically)
+### 📋 Requirements
 
-### Setup Instructions
+- **Python 3.7+** — Ensure Python is installed and available in PATH
+- **Windows OS** — Optimized for Windows (PowerShell support for advanced features)
+- **ANSI color support** — Enabled automatically in modern terminals
+
+### 🚀 Setup Instructions
 
 1. **Clone the repository:**
    ```bash
@@ -103,14 +110,20 @@ psCLI.Tool/
    cd psCLI.Tool
    ```
 
-2. **Create directories (automatic on first run):**
+2. **Create Python virtual environment (recommended):**
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+
+3. **Create directories (automatic on first run):**
    The CLI automatically creates required directories:
    ```
    %USERPROFILE%\.polsoft\psCli\settings\
    %USERPROFILE%\.polsoft\psCli\Calculator\
    ```
 
-3. **Run the CLI:**
+4. **Run the CLI:**
    ```bash
    python cli.py
    ```
@@ -120,31 +133,35 @@ psCLI.Tool/
    python C:\path\to\psCLI.Tool\cli.py
    ```
 
-## Quick Start
+---
 
-### Starting the CLI
+## 🎯 Quick Start
+
+### 🚀 Starting the CLI
 
 ```bash
 python cli.py
 ```
 
-This displays the main menu with available command groups.
+This displays the main menu with available command groups and ready-to-use utilities.
 
-### Interactive Mode
+### 💻 Interactive Mode
+
+Launch the CLI and explore commands interactively:
 
 ```
-psCLI.Tool > help                    # Show comprehensive help
-psCLI.Tool > all                     # Show all available commands
-psCLI.Tool > core                    # View core system modules
-psCLI.Tool > calculator              # Launch scientific calculator
-psCLI.Tool > games                   # Start games center
-psCLI.Tool > ascii                   # Open ASCII Center
-psCLI.Tool > owner                   # Show owner & environment info
-psCLI.Tool > reload                  # Reload plugins (hot reload)
-psCLI.Tool > exit                    # Exit the CLI
+psCLI.Tool > help                    # 📚 Show comprehensive help system
+psCLI.Tool > all                     # 📋 Show all available commands
+psCLI.Tool > core                    # 🔧 View core system modules
+psCLI.Tool > calculator              # 🧮 Launch scientific calculator
+psCLI.Tool > games                   # 🎮 Start games center
+psCLI.Tool > ascii                   # 🎭 Open ASCII Center
+psCLI.Tool > owner                   # 👤 Show owner & environment info
+psCLI.Tool > reload                  # 🔄 Reload plugins (hot reload)
+psCLI.Tool > exit                    # 🚪 Exit the CLI
 ```
 
-### Direct Command Execution
+### ⚡ Direct Command Execution
 
 Execute commands directly without entering interactive mode:
 
@@ -152,75 +169,81 @@ Execute commands directly without entering interactive mode:
 python cli.py calculator
 python cli.py games
 python cli.py help
+python cli.py ascii parrot
 ```
 
-## Available Commands
+---
 
-### Menu Group Commands
+## 📖 Available Commands
 
-| Command | Aliases | Description |
-|---------|---------|-------------|
-| `help` | `h` | Professional help system for all available plugins |
-| `core` | `sys`, `base` | Core system modules viewer |
-| `games` | `play`, `g` | Games center with Tic-Tac-Toe, Snake, Rock-Paper-Scissors |
-| `ascii` | `art`, `a` | ASCII Center launcher for animations and scripts |
-
-### Office Group Commands
+### 📌 Menu Group Commands
 
 | Command | Aliases | Description |
 |---------|---------|-------------|
-| `calculator` | `calc`, `math`, `kalk` | Scientific calculator with calculation history |
-| `notepad` | `note`, `n` | Launch Notepad text editor |
-| `paint` | `p` | Launch Paint application |
-| `print` | `cat`, `type` | Print file contents with highlighting |
-| `browser` | `web`, `www` | Launch CLI web browser |
-| `office` | `docs`, `work` | Microsoft Office utilities launcher |
-| `edit` | `ed` | Terminal text editor (external binary) |
+| `help` | `h`, `?` | 📚 Professional help system for all plugins |
+| `core` | `sys`, `base` | 🔧 Core system modules viewer |
+| `games` | `play`, `g` | 🎮 Games center with Tic-Tac-Toe, Snake, Tetris |
+| `ascii` | `art`, `a` | 🎭 ASCII Center launcher for animations |
 
-### System Group Commands
+### 🖥️ Office Group Commands
 
 | Command | Aliases | Description |
 |---------|---------|-------------|
-| `cls` | `clear`, `clean`, `c` | Clear terminal screen |
-| `pwd` | `path`, `where` | Print current working directory |
-| `cd` | `chdir`, `jump` | Change directory |
-| `dir` | `ls`, `list` | List directory contents |
-| `echo` | `say`, `repeat`, `e` | Echo text to console |
-| `owner` | `about`, `me`, `whoami` | Owner information and environment summary |
-| `sudo` | `admin`, `elevate` | Run processes with administrator privileges |
+| `calculator` | `calc`, `math`, `kalk` | 🧮 Scientific calculator with history |
+| `notepad` | `note`, `n` | 📝 Launch Notepad text editor |
+| `paint` | `p` | 🎨 Launch Paint application |
+| `print` | `cat`, `type` | 🖨️ Print file contents with highlighting |
+| `browser` | `web`, `www` | 🌐 Launch CLI web browser |
+| `office` | `docs`, `work` | 📊 Microsoft Office utilities launcher |
+| `edit` | `ed` | ✏️ Terminal text editor (external binary) |
 
-### Utility Group Commands
+### 🔧 System Group Commands
 
 | Command | Aliases | Description |
 |---------|---------|-------------|
-| `save` | `/s` | File saving utilities |
-| `venv` | `ve` | Virtual environment management |
-| `file` | `fm`, `fileman` | CMD File Manager CLI |
-| `lg2txt` | `lg`, `listgen` | File list generator |
+| `cls` | `clear`, `clean`, `c` | 🧹 Clear terminal screen |
+| `pwd` | `path`, `where` | 📍 Print current working directory |
+| `cd` | `chdir`, `jump` | 🚪 Change directory |
+| `dir` | `ls`, `list` | 📂 List directory contents |
+| `echo` | `say`, `repeat`, `e` | 🔊 Echo text to console |
+| `owner` | `about`, `me`, `whoami` | 👤 Owner information & environment |
+| `sudo` | `admin`, `elevate` | 🔐 Run processes with admin privileges |
 
-## Plugin Architecture
+### 🛠️ Utility Group Commands
 
-### How Plugins Work
+| Command | Aliases | Description |
+|---------|---------|-------------|
+| `save` | `/s` | 💾 File saving utilities |
+| `venv` | `ve` | 🐍 Virtual environment management |
+| `file` | `fm`, `fileman` | 📁 File Manager CLI |
+| `lg2txt` | `lg`, `listgen` | 📋 File list generator |
+| `installer` | `inst`, `i` | 📦 Installers Manager |
+
+---
+
+## 🔌 Plugin Architecture
+
+### 🎯 How Plugins Work
 
 The dispatcher (`cli.py`) automatically loads all plugin files from the `plugins/` directory:
 
-1. **Python Modules** (`.py` files) - Imported and scanned for `@command` decorated functions
-2. **External Binaries** (`.bat`, `.cmd`, `.ps1`, `.exe`, `.vbs`) - Registered and executed via subprocess
-3. **Metadata** - Optional JSON files for plugin configuration and aliases
+1. **Python Modules** (`.py` files) — Imported and scanned for `@command` decorated functions
+2. **External Binaries** (`.bat`, `.cmd`, `.ps1`, `.exe`, `.vbs`) — Registered and executed via subprocess
+3. **Metadata** — Optional JSON files for plugin configuration and aliases
 
-### Command Loading Process
+### 📥 Command Loading Process
 
 ```
 1. Scan plugins/ directory
 2. For each .py file:
    - Import the module
-   - Extract module-level metadata (__author__, __category__, __group__, __desc__, __version__)
+   - Extract module-level metadata (__author__, __category__, __group__, __desc__)
    - Find all @command decorated functions
    - Register commands and aliases
-   - Display in appropriate groups
+   - Display in appropriate groups (menu, core, office, utility)
 ```
 
-### Plugin Metadata
+### 📝 Plugin Metadata
 
 Each plugin module should include:
 
@@ -232,18 +255,20 @@ __desc__ = "Short description of the plugin"
 __version__ = "1.0.0"
 ```
 
-### External Asset & Tool Metadata Mapping
+### 🔗 External Asset & Tool Metadata Mapping
 
 - External commands and assets are registered via JSON metadata files placed in `metadata/`
 - Naming convention: `metadata/<filename>.<ext>.json` matches a file in `plugins/`, `ascii/`, or `tools/`
 - Examples:
   - `metadata/parrot.cmd.json` → `ascii/parrot.cmd`
   - `metadata/edit.exe.json` → `plugins/edit.exe`
-  - `metadata/fido.ps1.json` → `tools/fido.ps1`
+  - `metadata/adb-installer.py.json` → `plugins/adb-installer.py`
 
-## Creating Custom Plugins
+---
 
-### Basic Plugin Template
+## 🛠️ Creating Custom Plugins
+
+### 📦 Basic Plugin Template
 
 Create a new file in the `plugins/` directory:
 
@@ -271,7 +296,7 @@ def other_function(*args):
     print(f"{Color.CYAN}This is another command{Color.RESET}")
 ```
 
-### Using Color Output
+### 🎨 Using Color Output
 
 The `Color` class provides ANSI color codes:
 
@@ -287,7 +312,7 @@ print(f"{Color.GRAY}Gray text{Color.RESET}")
 print(f"{Color.BOLD}Bold text{Color.RESET}")
 ```
 
-### Plugin with External File Support
+### 📄 Plugin with External File Support
 
 ```python
 from cli import command, Color
@@ -313,16 +338,18 @@ def read_file(filename):
         print(f"{Color.RED}Error: {e}{Color.RESET}")
 ```
 
-## Configuration
+---
 
-### Settings File
+## ⚡ Configuration
+
+### ⚙️ Settings File
 
 Configuration is stored in:
 ```
 %USERPROFILE%\.polsoft\psCli\settings\terminal.json
 ```
 
-### Example Configuration
+### 📋 Example Configuration
 
 ```json
 {
@@ -337,16 +364,18 @@ Configuration is stored in:
 }
 ```
 
-### Configuration Options
+### 🔧 Configuration Options
 
-- `dispatcher.plugins_folder` - Relative path to plugins directory
-- `dispatcher.metadata_folder` - Relative path to metadata directory
-- `ui.clear_on_menu` - Clear screen when displaying menu (true/false)
-- `ui.default_prompt` - Default prompt format (`{root_dir}` available variable)
+- `dispatcher.plugins_folder` — Relative path to plugins directory
+- `dispatcher.metadata_folder` — Relative path to metadata directory
+- `ui.clear_on_menu` — Clear screen when displaying menu (true/false)
+- `ui.default_prompt` — Default prompt format (`{root_dir}` available variable)
 
-## Built-in Plugins
+---
 
-### Calculator (`calculator.py`)
+## 📚 Built-in Plugins
+
+### 🧮 Calculator (`calculator.py`)
 
 Advanced scientific calculator with history logging:
 
@@ -355,12 +384,12 @@ psCLI.Tool > calculator
 ```
 
 **Features:**
-- Basic arithmetic operations (+, -, *, /)
-- Scientific functions (sin, cos, tan, sqrt, log, etc.)
-- Calculation history saved to `%USERPROFILE%\.polsoft\psCli\Calculator\history.txt`
-- Support for both comma and dot decimal separators
+- ➕ Basic arithmetic operations (+, -, *, /)
+- 📐 Scientific functions (sin, cos, tan, sqrt, log, etc.)
+- 📊 Calculation history saved to `%USERPROFILE%\.polsoft\psCli\Calculator\history.txt`
+- 🌍 Support for both comma and dot decimal separators
 
-### Help System (`help.py`)
+### 📚 Help System (`help.py`)
 
 Comprehensive help documentation:
 
@@ -369,13 +398,12 @@ psCLI.Tool > help
 ```
 
 **Features:**
-- Detailed command documentation
-- Usage examples and syntax variations
-- Tips and tricks
-- Quick reference guide
-- Adaptive line wrapping for readable output in narrow terminals
+- 📖 Detailed command documentation with examples
+- 💡 Tips, tricks, and keyboard shortcuts
+- 🎨 Adaptive line wrapping for readable output
+- 🔍 Quick reference guide for all commands
 
-### Core Viewer (`core.py`)
+### 🔧 Core Viewer (`core.py`)
 
 View core system plugins:
 
@@ -383,7 +411,7 @@ View core system plugins:
 psCLI.Tool > core
 ```
 
-### File Manager (`file.py`)
+### 📁 File Manager (`file.py`)
 
 Full-screen file manager with common filesystem operations:
 
@@ -392,13 +420,13 @@ psCLI.Tool > file
 ```
 
 **Features:**
-- Navigate directories and parent path
-- Disk usage information
-- Create/delete/rename/copy/move
-- Backup (mirror) directories
-- Recursive search and list save
+- 🗂️ Navigate directories and parent paths
+- 💾 Disk usage information
+- 🔄 Create/delete/rename/copy/move operations
+- 🛡️ Backup (mirror) directories
+- 🔎 Recursive search and list save
 
-### Browser (`browser.py`)
+### 🌐 Browser (`browser.py`)
 
 CLI web browser with history, cookies and link navigation:
 
@@ -406,7 +434,7 @@ CLI web browser with history, cookies and link navigation:
 psCLI.Tool > browser
 ```
 
-### LG2TXT (`lg2txt.py`)
+### 📋 LG2TXT (`lg2txt.py`)
 
 Interactive file list generator with global settings sync:
 
@@ -414,7 +442,7 @@ Interactive file list generator with global settings sync:
 psCLI.Tool > lg2txt
 ```
 
-### ASCII Center (`ascii.py`)
+### 🎭 ASCII Center (`ascii.py`)
 
 Launcher for ASCII animations and scripts:
 
@@ -424,12 +452,12 @@ ascii parrot
 ```
 
 **Features:**
-- Scans the `/ascii` folder
-- Supports `.cmd`, `.bat`, `.ps1`, `.vbs`, `.exe`, `.py`
-- Launches assets in a new console window
-- Loads descriptions from matching JSON files in `metadata/`
+- 🎪 Scans the `/ascii` folder for animations
+- 🎬 Supports `.cmd`, `.bat`, `.ps1`, `.vbs`, `.exe`, `.py`
+- 🖼️ Launches assets in a new console window
+- 📝 Loads descriptions from matching JSON files in `metadata/`
 
-### Owner (`owner.py`)
+### 👤 Owner (`owner.py`)
 
 Owner and environment information:
 
@@ -440,12 +468,12 @@ psCLI.Tool > owner mac set Ethernet
 ```
 
 **Features:**
-- Username, host, home, and OS details
-- Network status (online/offline), local IP, public IP
-- MAC address display with preferred adapter selection
-- OS details: release, build, architecture, Python version
+- 👥 Username, host, home, and OS details
+- 🌐 Network status (online/offline), local IP, public IP
+- 📡 MAC address display with preferred adapter selection
+- 💻 OS details: release, build, architecture, Python version
 
-### Sudo (`sudo.py`)
+### 🔐 Sudo (`sudo.py`)
 
 Run commands with administrator privileges:
 
@@ -455,83 +483,123 @@ psCLI.Tool > sudo notepad.exe README.md
 ```
 
 **Notes:**
-- Triggers UAC prompt
-- Actions can be logged in `terminal.json`
+- ⚠️ Triggers UAC prompt
+- 📝 Actions can be logged in `terminal.json`
 
-## Games
+### 📦 Installer Manager (`installer.py`)
 
-The games center provides three terminal-based games:
+Professional installer launcher with metadata support:
 
-### Tic-Tac-Toe
+```bash
+psCLI.Tool > installer
+installer adb-installer
+```
+
+**Features:**
+- 📥 Scans `/plugins` folder for installer scripts
+- 🏷️ Filters by `__group__ = "installer"`
+- 📊 Displays metadata (description, aliases, author)
+- 🔄 Supports Python, PowerShell, batch, and executable installers
+
+---
+
+## 🎮 Games
+
+The games center provides multiple terminal-based games:
+
+### 🎲 Tic-Tac-Toe
 Classic Tic-Tac-Toe game vs. computer AI
 ```bash
 psCLI.Tool > games
-> 1
+> tic-tac-toe
 ```
 
-### Snake CLI
+### 🐍 Snake CLI
 Navigate the snake to collect food
 ```bash
 psCLI.Tool > games
-> 2
+> snake
 ```
 
-### Rock-Paper-Scissors
-Play against the computer
+### 🎭 Tetris Mini
+Classic Tetris experience in the terminal
 ```bash
 psCLI.Tool > games
-> 3
+> tetris
 ```
 
-## Tools
+### 🎯 Rock-Paper-Scissors
+Play against the computer with statistics
+```bash
+psCLI.Tool > games
+> rock-paper-scissors
+```
 
-External tools available via the hack menu:
+### 🏎️ Racer CLI
+Drive your car and avoid obstacles
+```bash
+psCLI.Tool > games
+> racer
+```
 
-- `MAS.cmd` — Microsoft Activation Scripts
-- `pmas.cmd` — PowerShell Multi Activation System
-- `Office_365.bat` — Office 365 installer/activator
-- `fido.ps1` — Microsoft Windows ISO downloader
+---
+
+## 🔧 Tools
+
+External tools available:
+
+- 📦 `MAS.cmd` — Microsoft Activation Scripts
+- 📦 `pmas.cmd` — PowerShell Multi Activation System
+- 📦 `Office_365.bat` — Office 365 installer/activator
+- 📦 `fido.ps1` — Microsoft Windows ISO downloader
 
 Usage:
 ```bash
-psCLI.Tool > hack
-hack mas
-hack pmas
-hack Office_365
-hack fido
+psCLI.Tool > installer
+installer adb-installer
 ```
 
-## Development
+---
 
-### Project Information
+## 🚀 Development
+
+### 📊 Project Information
 
 - **Author**: Sebastian Januchowski
 - **Email**: polsoft.its@fastservice.com
 - **GitHub**: https://github.com/seb07uk
 - **License**: MIT
-- **Created**: January 17, 2026
+- **Created**: January 18, 2026
+- **Version**: 3.0.0
 
-### Contributing
+### 🤝 Contributing
 
-To contribute:
+To contribute to this project:
 
-1. Create a new plugin in the `plugins/` directory
-2. Include proper metadata headers
-3. Use the `@command` decorator
-4. Test with the CLI
-5. Submit a pull request
+1. 🍴 Fork the repository
+2. 🌿 Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. 📝 Create a new plugin in the `plugins/` directory
+4. ✅ Include proper metadata headers
+5. 🧪 Test with the CLI thoroughly
+6. 💾 Commit your changes (`git commit -m 'Add amazing feature'`)
+7. 📤 Push to the branch (`git push origin feature/amazing-feature`)
+8. 🔄 Open a Pull Request
 
-### Development Tips
+### 💡 Development Tips
 
-- Use `reload` command to hot-reload plugins during development
-- Check the `help` system to ensure your plugin appears correctly
-- Add comprehensive docstrings to your command functions
-- Use meaningful aliases for quick access
-- Test with multiple argument combinations
+- 🔄 Use `reload` command to hot-reload plugins during development
+- 📚 Check the `help` system to ensure your plugin appears correctly
+- 📖 Add comprehensive docstrings to your command functions
+- 🏷️ Use meaningful aliases for quick access
+- 🧪 Test with multiple argument combinations
+- 🎨 Use colors responsibly with the `Color` class
+- 📝 Document your plugin in the help system
 
-## License
+---
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📄 License
+
+This project is licensed under the **MIT License** - see the LICENSE file for details.
 
 ```
 MIT License
@@ -551,5 +619,22 @@ copies or substantial portions of the Software.
 
 ---
 
+## 🌟 Quick Links
+
+- 📖 [Full Documentation](#)
+- 🐛 [Report Issues](https://github.com/seb07uk/psCLI.Tool/issues)
+- 💬 [Discussions](https://github.com/seb07uk/psCLI.Tool/discussions)
+- 📮 [Contact](mailto:polsoft.its@fastservice.com)
+
+---
+
+<div align="center">
+
 **Version**: 3.0.0  
 **Last Updated**: January 18, 2026
+
+Made with ❤️ by Sebastian Januchowski
+
+[⬆ Back to top](#)
+
+</div>
