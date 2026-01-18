@@ -1,21 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-================================================================================
-  TERMINAL CLI - COMPREHENSIVE HELP SYSTEM v3.0.0
-================================================================================
+╔════════════════════════════════════════════════════════════════════════════╗
+║        🚀 TERMINAL CLI - COMPREHENSIVE HELP SYSTEM v3.0.0 🚀               ║
+╚════════════════════════════════════════════════════════════════════════════╝
+  
   File: plugins/help.py
   Author: Sebastian Januchowski
   Email: polsoft.its@fastservice.com
   GitHub: https://github.com/seb07uk
   Version: 3.0.0
-  Date: January 17, 2026
+  Date: January 18, 2026
   License: MIT
-================================================================================
-  Professional Help System with Complete Plugin Documentation
+  
+  ✨ Professional Help System with Complete Plugin Documentation ✨
+  
   Provides detailed help for all CLI commands with usage examples,
   syntax variations, tips, and quick references.
-================================================================================
+  
+  📚 Get Started:
+     - Type 'help' to see all available commands
+     - Type 'help <command>' for detailed information about a specific command
+     - Use aliases for quick navigation
+  
+  💡 Pro Tips:
+     - Commands are case-insensitive
+     - Aliases work the same way as command names
+     - Press [Tab] for command auto-completion
+     - Use 'exit' or 'quit' to return to main menu
 """
 
 import os
@@ -621,29 +633,25 @@ def show_help(cmd_name=None):
     
     if not cmd_name:
         # Show all commands grouped by category
-        box_width = 76
-        print(f"\n{CYAN}{BOLD}{'=' * 76}{RESET}")
+        box_width = 82
+        print(f"\n{CYAN}{BOLD}{'╔' + '═' * 80 + '╗'}{RESET}")
         
-        line1 = f" TERMINAL CLI - COMPREHENSIVE HELP SYSTEM v{__version__} "
-        padding1 = box_width - len(line1)
-        print(f"{CYAN}{BOLD}{line1}{' ' * padding1}{RESET}")
+        line1 = f"  🚀 TERMINAL CLI - HELP SYSTEM v{__version__}  "
+        padding1 = 82 - len(line1) - 4
+        print(f"{CYAN}{BOLD}║ {line1}{' ' * max(0, padding1)}║{RESET}")
         
-        line2 = f" Professional CLI environment with {len(PLUGINS_DB)} documented modules "
-        padding2 = box_width - len(line2)
-        print(f"{CYAN}{BOLD}{line2}{' ' * padding2}{RESET}")
+        line2 = f"  Professional CLI environment with {len(PLUGINS_DB)} documented modules  "
+        padding2 = 82 - len(line2) - 4
+        print(f"{CYAN}{BOLD}║ {line2}{' ' * max(0, padding2)}║{RESET}")
         
-        print(f"{CYAN}{BOLD}{'=' * 76}{RESET}\n")
+        print(f"{CYAN}{BOLD}{'╚' + '═' * 80 + '╝'}{RESET}\n")
         
         # Quick start section
-        print(f"{YELLOW}{BOLD}QUICK START:{RESET}")
-        print(f"  {GREEN}help <command>{RESET}      Get detailed help about a specific command")
-        print(f"  {GREEN}help all{RESET}            Show complete help for all commands")
-        print(f"  {GREEN}?{RESET}                   Same as help\n")
-        
-        print(format_section("Environment Summary"))
-        print(format_tip("CLI shows Network line: Online/Offline, Local IP, Public IP, MAC (preferred adapter)."))
-        print(format_tip("CLI shows OS line: System, Release, Build, Architecture, Python version."))
-        print()
+        print(f"{YELLOW}{BOLD}⭐ QUICK START:{RESET}")
+        print(f"  {GREEN}help{RESET}                - Show all available commands")
+        print(f"  {GREEN}help <cmd>{RESET}         - Get detailed help for a command")
+        print(f"  {GREEN}? <cmd>{RESET}            - Quick help shorthand")
+        print(f"  {GREEN}help all{RESET}           - Show complete help for all commands\n")
         
         # Group commands by category
         categories = {}
@@ -653,23 +661,24 @@ def show_help(cmd_name=None):
                 categories[cat] = []
             categories[cat].append((cmd, data['description']))
         
-        # Display categories
+        # Display categories with visual separators
         for cat in sorted(categories.keys()):
-            print(f"{MAGENTA}{BOLD}> {cat.upper()}{RESET}")
+            print(f"{MAGENTA}{BOLD}▶ {cat.upper()}{RESET}")
             for cmd, desc in sorted(categories[cat]):
                 print(format_command(cmd, desc))
             print()
         
         # Footer information
-        print_separator("-")
-        print(f"{GRAY}Type 'help <command>' for detailed information about a command.{RESET}")
+        print(f"{CYAN}{BOLD}{'─' * 82}{RESET}")
+        print(f"{GRAY}💡 Tip: Type {GREEN}'help <command>'{RESET}{GRAY} for detailed information about a command.{RESET}")
+        print(f"{GRAY}📚 All commands are case-insensitive and support aliases!{RESET}\n")
         print(f"{GRAY}Type 'help all' to see complete documentation for all commands.{RESET}\n")
         return
     
     # Show help for "all" command
     if cmd_name.lower() == "all":
-        print(f"\n{CYAN}{BOLD}COMPLETE COMMAND DOCUMENTATION{RESET}")
-        print_separator("=")
+        print(f"\n{CYAN}{BOLD}📖 COMPLETE COMMAND DOCUMENTATION{RESET}")
+        print(f"{CYAN}{BOLD}{'═' * 82}{RESET}\n")
         
         for cmd_name_sorted in sorted(PLUGINS_DB.keys()):
             _display_command_help(cmd_name_sorted)
@@ -682,32 +691,32 @@ def show_help(cmd_name=None):
 def _display_command_help(cmd_name):
     """Display detailed help for a specific command."""
     if cmd_name not in PLUGINS_DB:
-        print(f"\n{RED}Error: Command '{cmd_name}' is not yet documented.{RESET}")
+        print(f"\n{RED}❌ Error: Command '{cmd_name}' is not yet documented.{RESET}")
         print(f"{GRAY}Available commands: {', '.join(sorted(PLUGINS_DB.keys()))}{RESET}\n")
         return
     
     info = PLUGINS_DB[cmd_name]
-    print(f"\n{CYAN}{BOLD}{'-' * 75}{RESET}")
-    print(f"{CYAN}{BOLD}DOCUMENTATION: {info['name'].upper()}{RESET}")
-    print(f"{CYAN}{BOLD}{'-' * 75}{RESET}\n")
+    print(f"{CYAN}{BOLD}{'╔' + '═' * 80 + '╗'}{RESET}")
+    print(f"{CYAN}{BOLD}║  📚 {info['name'].upper().ljust(75)} ║{RESET}")
+    print(f"{CYAN}{BOLD}{'╚' + '═' * 80 + '╝'}{RESET}\n")
     
     # Description
     width = _term_width()
     desc_wrapped = textwrap.fill(info['description'], width=max(40, width - 2))
-    print(f"{WHITE}{desc_wrapped}{RESET}\n")
+    print(f"{WHITE}{BOLD}{desc_wrapped}{RESET}\n")
     
     # Aliases if available
     if "aliases" in info and info["aliases"]:
         aliases_str = ", ".join(f"{GREEN}{a}{RESET}" for a in info["aliases"])
-        print(f"{YELLOW}Aliases:{RESET} {aliases_str}\n")
+        print(f"{YELLOW}🏷️  Aliases:{RESET} {aliases_str}\n")
     
     # Authors if available
     if "authors" in info and info["authors"]:
         authors_str = ", ".join(info["authors"])
-        print(f"{YELLOW}Authors:{RESET} {authors_str}\n")
+        print(f"{YELLOW}✍️  Authors:{RESET} {authors_str}\n")
     
     # Syntax
-    print(format_section("Syntax"))
+    print(format_section("💻 Syntax"))
     for syntax_line in info['syntax']:
         syn_wrapped = textwrap.fill(syntax_line, width=max(40, _term_width() - 4), initial_indent="  ", subsequent_indent="  ")
         print(f"{GREEN}{syn_wrapped}{RESET}")
@@ -715,7 +724,7 @@ def _display_command_help(cmd_name):
     
     # Options
     if "options" in info:
-        print(format_section("Options"))
+        print(format_section("⚙️  Options"))
         for opt in info['options']:
             opt_wrapped = textwrap.fill(opt, width=max(40, _term_width() - 4), initial_indent="  ", subsequent_indent="  ")
             print(f"{BLUE}{opt_wrapped}{RESET}")
@@ -723,74 +732,74 @@ def _display_command_help(cmd_name):
     
     # Features
     if "features" in info:
-        print(format_section("Features"))
+        print(format_section("✨ Features"))
         for feature in info['features']:
             print(format_tip(feature))
         print()
     
     # Supported types
     if "supported_types" in info:
-        print(format_section("Supported Types"))
+        print(format_section("📄 Supported Types"))
         types_str = ", ".join(info["supported_types"])
         types_wrapped = textwrap.fill(types_str, width=max(40, _term_width() - 4), initial_indent="  ", subsequent_indent="  ")
         print(f"{types_wrapped}\n")
     
     # Color palette
     if "color_palette" in info:
-        print(format_section("Color Palette"))
+        print(format_section("🎨 Color Palette"))
         for color in info["color_palette"]:
             print(format_tip(color))
         print()
     
     # Examples
-    print(format_section("Examples"))
+    print(format_section("📋 Examples"))
     for cmd, desc in info['examples']:
         print(format_command(cmd, desc))
     print()
     
     # Shortcuts
     if "shortcuts" in info:
-        print(format_section("Keyboard Shortcuts"))
+        print(format_section("⌨️  Keyboard Shortcuts"))
         for shortcut in info["shortcuts"]:
             print(format_tip(shortcut))
         print()
     
     # Tips
     if "tips" in info:
-        print(format_section("Tips"))
+        print(format_section("💡 Pro Tips"))
         for tip in info['tips']:
             print(format_tip(tip))
         print()
     
     # Additional information
     if "storage" in info:
-        print(f"{GRAY}DATA LOCATION:{RESET} {info['storage']}")
+        print(f"{GRAY}💾 DATA LOCATION:{RESET} {info['storage']}")
     
     if "output" in info:
-        print(f"{GRAY}OUTPUT:{RESET} {info['output']}")
+        print(f"{GRAY}📤 OUTPUT:{RESET} {info['output']}")
     
     if "output_format" in info:
-        print(f"{GRAY}OUTPUT FORMAT:{RESET} {info['output_format']}")
+        print(f"{GRAY}📊 OUTPUT FORMAT:{RESET} {info['output_format']}")
     
     if "pagination" in info:
-        print(f"{GRAY}PAGINATION:{RESET} {info['pagination']}")
+        print(f"{GRAY}📑 PAGINATION:{RESET} {info['pagination']}")
     
     if "performance" in info:
-        print(f"{GRAY}PERFORMANCE:{RESET} {info['performance']}")
+        print(f"{GRAY}⚡ PERFORMANCE:{RESET} {info['performance']}")
     
     if "automation" in info:
-        print(f"{GRAY}AUTOMATION:{RESET} {info['automation']}")
+        print(f"{GRAY}🔄 AUTOMATION:{RESET} {info['automation']}")
     
     if "requires" in info:
-        print(f"{GRAY}REQUIREMENTS:{RESET} {info['requires']}")
+        print(f"{GRAY}📦 REQUIREMENTS:{RESET} {info['requires']}")
     
     # Available games
     if "available_games" in info:
-        print(f"\n{YELLOW}Available Games:{RESET}")
+        print(f"\n{YELLOW}🎮 Available Games:{RESET}")
         for game in info["available_games"]:
-            print(f"  {MAGENTA}-{RESET} {game}")
+            print(f"  {MAGENTA}▸{RESET} {game}")
     
-    print()
+    print(f"\n{CYAN}{BOLD}{'─' * 82}{RESET}\n")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

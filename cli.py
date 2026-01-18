@@ -7,8 +7,16 @@ import json
 import socket
 import urllib.request
 import platform
+import threading
 
 from plugins import owner
+
+# Import msvcrt for Windows key detection
+try:
+    import msvcrt
+    HAS_MSVCRT = True
+except ImportError:
+    HAS_MSVCRT = False
 
 
 class Color:
@@ -281,6 +289,12 @@ class Dispatcher:
         print(full_line + "\n")
 
     def execute(self, trigger, *args):
+        if trigger.lower() == "all":
+            self.display_list()
+            return
+        if trigger.lower() in self.get_all_groups():
+            self.display_list(trigger.lower())
+            return
         target = self.aliases.get(trigger, trigger)
         if target in self.commands:
             try:
@@ -289,6 +303,22 @@ class Dispatcher:
                 print(f"{Color.RED}[RUNTIME ERROR] '{trigger}': {e}{Color.RESET}")
         else:
             print(f"{Color.RED}[?] Unknown command or group: '{trigger}'{Color.RESET}")
+
+    def _check_f1_key(self):
+        """Check for F1 key press in non-blocking way."""
+        if not HAS_MSVCRT:
+            return False
+        try:
+            if msvcrt.kbhit():
+                key = msvcrt.getch()
+                # F1 on Windows is \x00K in extended key mode
+                if key == b'\x00':
+                    next_key = msvcrt.getch()
+                    if next_key == b'?':  # F1 key
+                        return True
+        except:
+            pass
+        return False
 
 # --- EXECUTION ---
 if __name__ == "__main__":
@@ -304,6 +334,11 @@ if __name__ == "__main__":
             
         while True:
             try:
+                # Check for F1 key press
+                if cli._check_f1_key():
+                    cli.display_list("core")
+                    continue
+                
                 prompt_fmt = cli.settings.get("ui", {}).get("default_prompt", "{root_dir} > ")
                 prompt_text = prompt_fmt.format(root_dir=os.path.basename(cli.root_dir))
                 prompt = f"{Color.CYAN}{prompt_text}{Color.RESET}"
@@ -311,13 +346,23 @@ if __name__ == "__main__":
                 user_input = input(prompt).strip().split()
                 if not user_input: continue
                 
-                cmd = user_input[0].lower()
+                cmd = user_input[0]
+                # Treat '#' as alias for 'menu' - check before .lower()
+                if cmd == "#":
+                    cmd = "menu"
+                else:
+                    cmd = cmd.lower()
+                
                 args = user_input[1:]
                 
                 if cmd in ["exit", "quit"]: break
                 
                 if cmd == "all":
                     cli.display_list()
+                    continue
+                
+                if cmd == "menu":
+                    cli.display_list("menu")
                     continue
 
                 if cmd in ["reload", "r"]: 
