@@ -119,13 +119,13 @@ def hack_dispatcher(*args):
                 if ext == ".py":
                     subprocess.Popen([sys.executable, path], creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
                 elif ext == ".ps1":
-                    subprocess.Popen(["powershell", "-NoExit", "-File", path], creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
+                    subprocess.Popen(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path], cwd=TOOLS_DIR, creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
                 elif ext in [".bat", ".cmd"]:
-                    subprocess.Popen([path], shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
+                    subprocess.Popen(["cmd", "/c", path], shell=False, cwd=TOOLS_DIR, creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
                 elif ext == ".vbs":
-                    subprocess.Popen(["cscript.exe", path], creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
+                    subprocess.Popen(["cscript.exe", "//nologo", path], cwd=TOOLS_DIR, creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
                 elif ext == ".exe":
-                    subprocess.Popen([path], creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
+                    subprocess.Popen([path], cwd=TOOLS_DIR, creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
             except Exception as e:
                 print(f"{Color.RED}[ERROR] Nie można uruchomić: {e}{Color.RESET}")
                 time.sleep(2)
