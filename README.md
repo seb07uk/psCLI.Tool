@@ -67,8 +67,7 @@ psCLI.Tool/
 │   ├── cls.py                     # 🧹 Clear screen command
 │   ├── pwd.py                     # 📍 Print working directory
 │   ├── cd.py                      # 🚪 Change directory
-│   ├── dir.py                     # 📂 Directory listing
-│   ├── save.py                    # 💾 File saving utilities
+│   ├── dir.py                     # 📂 Directory listing   ├── tree.py                   # 🌳 Directory tree visualizer│   ├── save.py                    # 💾 File saving utilities
 │   ├── venv.py                    # 🐍 Virtual environment management
 │   ├── ascii.py                   # 🎭 ASCII Center launcher
 │   ├── installer.py               # 📦 Installers Manager
@@ -204,7 +203,8 @@ python cli.py ascii parrot
 | `cls` | `clear`, `clean`, `c` | 🧹 Clear terminal screen |
 | `pwd` | `path`, `where` | 📍 Print current working directory |
 | `cd` | `chdir`, `jump` | 🚪 Change directory |
-| `dir` | `ls`, `list` | 📂 List directory contents |
+| `dir` | `ls`, `list` | 📂 List directory contents with advanced sorting |
+| `tree` | `ls` | 🌳 Visualize directory structure in tree format |
 | `echo` | `say`, `repeat`, `e` | 🔊 Echo text to console |
 | `owner` | `about`, `me`, `whoami` | 👤 Owner information & environment |
 | `sudo` | `admin`, `elevate` | 🔐 Run processes with admin privileges |
@@ -442,7 +442,32 @@ Interactive file list generator with global settings sync:
 psCLI.Tool > lg2txt
 ```
 
-### 🎭 ASCII Center (`ascii.py`)
+### � Tree Visualizer (`tree.py`)
+
+Elegant directory tree visualization with color-coded file types for instant visual hierarchy understanding:
+
+```bash
+psCLI.Tool > tree
+psCLI.Tool > tree C:\Users
+psCLI.Tool > tree . -d 2
+psCLI.Tool > tree -a
+```
+
+**Features:**
+- 🎨 Color-coded files by extension (executables, archives, documents, media)
+- 📊 Display directory structure at a glance with beautiful ASCII art
+- 🔍 Limit recursion depth for large directory hierarchies
+- 👁️ Show hidden files with `-a` flag for complete visibility
+- 📈 Recursive traversal with intuitive visual branch symbols
+
+**Color Scheme:**
+- 🔴 **Red** — Archives (.zip, .rar, .7z, .tar, .gz)
+- 🟢 **Green** — Executables (.exe, .py, .ps1, .bat, .cmd)
+- 🔵 **Cyan** — Documents (.pdf, .docx, .txt, .log, .md)
+- 🟡 **Yellow** — Media (.jpg, .png, .gif, .mp4, .wav)
+- ⚫ **Gray** — Configuration files (.json, .yaml, .ini)
+
+### �🎭 ASCII Center (`ascii.py`)
 
 Launcher for ASCII animations and scripts:
 
@@ -452,14 +477,14 @@ ascii parrot
 ```
 
 **Features:**
-- 🎪 Scans the `/ascii` folder for animations
-- 🎬 Supports `.cmd`, `.bat`, `.ps1`, `.vbs`, `.exe`, `.py`
-- 🖼️ Launches assets in a new console window
-- 📝 Loads descriptions from matching JSON files in `metadata/`
+- 🎪 Intelligently scans the `/ascii` folder for available animations
+- 🎬 Supports multiple formats: `.cmd`, `.bat`, `.ps1`, `.vbs`, `.exe`, `.py`
+- 🖼️ Seamlessly launches assets in a new console window
+- 📝 Automatically loads rich descriptions from matching JSON files in `metadata/`
 
 ### 👤 Owner (`owner.py`)
 
-Owner and environment information:
+Comprehensive owner and environment information at your fingertips:
 
 ```bash
 psCLI.Tool > owner
@@ -468,10 +493,11 @@ psCLI.Tool > owner mac set Ethernet
 ```
 
 **Features:**
-- 👥 Username, host, home, and OS details
-- 🌐 Network status (online/offline), local IP, public IP
-- 📡 MAC address display with preferred adapter selection
-- 💻 OS details: release, build, architecture, Python version
+- 👥 Complete system identity: username, hostname, home directory, OS details
+- 🌐 Real-time network status detection (online/offline) with IP information
+- 📡 MAC address discovery with preferred adapter selection
+- 💻 Detailed OS telemetry: release, build number, architecture, Python version
+- 🔧 Persistent MAC address preference storage
 
 ### 🔐 Sudo (`sudo.py`)
 
@@ -488,7 +514,7 @@ psCLI.Tool > sudo notepad.exe README.md
 
 ### 📦 Installer Manager (`installer.py`)
 
-Professional installer launcher with metadata support:
+Streamlined installer management with comprehensive metadata support:
 
 ```bash
 psCLI.Tool > installer
@@ -496,10 +522,11 @@ installer adb-installer
 ```
 
 **Features:**
-- 📥 Scans `/plugins` folder for installer scripts
-- 🏷️ Filters by `__group__ = "installer"`
-- 📊 Displays metadata (description, aliases, author)
-- 🔄 Supports Python, PowerShell, batch, and executable installers
+- 📥 Intelligent scanning of `/plugins` folder for installer scripts
+- 🏷️ Smart filtering by installer classification (`__group__ = "installer"`)
+- 📊 Rich metadata display: description, aliases, author, and more
+- 🔄 Unified support for multiple formats: Python, PowerShell, batch, and executables
+- 🎯 One-command execution with argument pass-through
 
 ---
 
@@ -570,7 +597,7 @@ installer adb-installer
 - **GitHub**: https://github.com/seb07uk
 - **License**: MIT
 - **Created**: January 18, 2026
-- **Version**: 3.0.0
+- **Latest Version**: 3.1.0
 
 ### 🤝 Contributing
 
@@ -585,15 +612,16 @@ To contribute to this project:
 7. 📤 Push to the branch (`git push origin feature/amazing-feature`)
 8. 🔄 Open a Pull Request
 
-### 💡 Development Tips
+### 💡 Development Tips & Best Practices
 
-- 🔄 Use `reload` command to hot-reload plugins during development
-- 📚 Check the `help` system to ensure your plugin appears correctly
-- 📖 Add comprehensive docstrings to your command functions
-- 🏷️ Use meaningful aliases for quick access
-- 🧪 Test with multiple argument combinations
-- 🎨 Use colors responsibly with the `Color` class
-- 📝 Document your plugin in the help system
+- 🔄 **Hot Reload** — Use the `reload` command to instantly apply plugin changes during development without restarting
+- 📚 **Help Integration** — Verify your plugin appears correctly in the `help` system and ensure documentation is complete
+- 📖 **Clear Documentation** — Add comprehensive docstrings to your command functions for automatic help generation
+- 🏷️ **Smart Aliasing** — Design meaningful aliases for frequently-used commands to improve productivity
+- 🧪 **Thorough Testing** — Test with multiple argument combinations, edge cases, and error scenarios
+- 🎨 **Consistent Styling** — Use the `Color` class responsibly to maintain a cohesive visual experience
+- 📝 **Self-Documenting Code** — Document plugins directly in the help system using built-in help functions
+- 🎯 **Error Handling** — Implement graceful error handling with informative messages for better UX
 
 ---
 
@@ -630,8 +658,8 @@ copies or substantial portions of the Software.
 
 <div align="center">
 
-**Version**: 3.0.0  
-**Last Updated**: January 18, 2026
+**Version**: 3.1.0 (with Tree Visualizer)  
+**Last Updated**: January 19, 2026
 
 Made with ❤️ by Sebastian Januchowski
 

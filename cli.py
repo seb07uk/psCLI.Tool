@@ -8,6 +8,7 @@ import socket
 import urllib.request
 import platform
 import threading
+import webbrowser
 
 from plugins import owner
 
@@ -118,6 +119,30 @@ class Dispatcher:
                 sys.path.insert(0, self.root_dir)
         except Exception as e:
             print(f"{Color.RED}[CRITICAL] Could not prepare environment: {e}{Color.RESET}")
+
+    def open_html_report(self, filepath):
+        """Open HTML report in default browser."""
+        try:
+            if os.path.exists(filepath):
+                webbrowser.open(f"file:///{filepath.replace(chr(92), '/')}")
+                print(f"{Color.GREEN}[OK] Opening report in default browser...{Color.RESET}")
+            else:
+                print(f"{Color.RED}[ERROR] File not found: {filepath}{Color.RESET}")
+        except Exception as e:
+            print(f"{Color.RED}[ERROR] Could not open HTML report: {e}{Color.RESET}")
+
+    def get_html_reports(self):
+        """Get list of generated HTML reports."""
+        reports_dir = os.path.expandvars(r"%userprofile%\.polsoft\psCLI\reports")
+        if not os.path.exists(reports_dir):
+            return []
+        
+        try:
+            reports = [f for f in os.listdir(reports_dir) if f.endswith('.html')]
+            return sorted(reports, key=lambda x: os.path.getmtime(os.path.join(reports_dir, x)), reverse=True)
+        except Exception as e:
+            print(f"{Color.RED}[ERROR] Could not list reports: {e}{Color.RESET}")
+            return []
 
     def _get_json_metadata(self, filename):
         meta = {"author": "System", "category": "utility", "group": "external", "desc": "No description", "aliases": []}
@@ -349,7 +374,7 @@ if __name__ == "__main__":
                 cmd = user_input[0]
                 # Treat '#' as alias for 'menu' - check before .lower()
                 if cmd == "#":
-                    cmd = "menu"
+                    cmd = "menuallweb"
                 else:
                     cmd = cmd.lower()
                 
