@@ -9,8 +9,8 @@
   Author: Sebastian Januchowski
   Email: polsoft.its@fastservice.com
   GitHub: https://github.com/seb07uk
-  Version: 3.0.0
-  Date: January 18, 2026
+  Version: 3.1.0
+  Date: January 19, 2026
   License: MIT
   
   ✨ Professional Help System with Complete Plugin Documentation ✨
@@ -40,7 +40,8 @@ __author__ = "Sebastian Januchowski"
 __category__ = "help & info"
 __group__ = "core"
 __desc__ = "Professional help system for all available plugins and commands"
-__version__ = "3.0.0"
+__version__ = "3.1.0"
+__updated__ = "January 19, 2026"
 __config__ = r"%userprofile%\.polsoft\psCli\settings\terminal.json"
 
 # Handle both direct execution and import from cli.py
@@ -279,13 +280,18 @@ PLUGINS_DB = {
         "available_games": [
             "Rock-Paper-Scissors",
             "Tic-Tac-Toe",
-            "Snake CLI"
+            "Snake CLI",
+            "Hangman",
+            "Racer CLI",
+            "Tetris Mini"
         ],
         "examples": [
             ("games", "Show available games"),
-            ("play rock-paper-scissors", "Launch game")
+            ("play rock-paper-scissors", "Launch game"),
+            ("play hangman", "Play Hangman")
         ],
-        "tips": ["Press [q] to quit any game", "Games are fully interactive", "High scores may be tracked"]
+        "tips": ["Press [q] to quit any game", "Games are fully interactive", "High scores may be tracked", "6 games available: Rock-Paper-Scissors, Tic-Tac-Toe, Snake CLI, Hangman, Racer CLI, Tetris Mini"],
+        "storage": r"%projectroot%\games"
     },
     
     "ascii": {
@@ -581,6 +587,175 @@ PLUGINS_DB = {
             "Supports localized 'Adres fizyczny' in ipconfig output"
         ],
         "storage": r"%userprofile%\.polsoft\psCLI\metadata\echo.json"
+    },
+
+    "installer": {
+        "name": "installer",
+        "category": "utilities",
+        "description": "Installer Manager - launcher for installer modules and scripts with metadata support",
+        "aliases": ["install", "ins"],
+        "syntax": ["installer", "install [module_name]"],
+        "features": [
+            "Display available installers",
+            "Execute installer scripts",
+            "Load metadata from JSON files",
+            "Support .py, .bat, .cmd, .ps1, .vbs, .exe files",
+            "Interactive installer selection"
+        ],
+        "examples": [
+            ("installer", "Show available installers"),
+            ("install DirectX", "Execute DirectX installer")
+        ],
+        "tips": ["Installers stored in /install/ directory", "Metadata files in /metadata/", "Easy integration of new installers"],
+        "storage": r"%projectroot%\install"
+    },
+
+    "health": {
+        "name": "health",
+        "category": "system",
+        "description": "Health Tools - system health check and maintenance utilities",
+        "aliases": ["check", "restore"],
+        "syntax": ["health [tool_name]"],
+        "features": [
+            "System health diagnostics",
+            "Performance monitoring",
+            "Health restoration scripts",
+            "System cleanup utilities"
+        ],
+        "examples": [
+            ("health", "Show health tools"),
+            ("health restore", "Run restoration utility")
+        ],
+        "tips": ["Health tools in /health/ directory", "Scripts with metadata support", "Safe system maintenance"],
+        "storage": r"%projectroot%\health"
+    },
+
+    "reboot": {
+        "name": "reboot",
+        "category": "system",
+        "description": "System reboot utility with optional delayed restart functionality",
+        "aliases": ["restart", "r"],
+        "syntax": ["reboot", "restart [seconds]"],
+        "features": [
+            "Immediate system restart",
+            "Delayed restart with countdown",
+            "Clean shutdown",
+            "Process termination before restart"
+        ],
+        "examples": [
+            ("reboot", "Restart system immediately"),
+            ("restart 60", "Restart after 60 seconds")
+        ],
+        "tips": ["Close applications before reboot", "Save your work first", "Countdown can be interrupted"],
+        "requires": "Administrator privileges"
+    },
+
+    "shutdown": {
+        "name": "shutdown",
+        "category": "system",
+        "description": "System shutdown utility with optional delayed shutdown and message display",
+        "aliases": ["power", "off", "stop"],
+        "syntax": ["shutdown", "power [seconds]", "shutdown -c"],
+        "features": [
+            "Immediate system shutdown",
+            "Delayed shutdown with countdown",
+            "Cancel scheduled shutdown",
+            "Message display before shutdown"
+        ],
+        "examples": [
+            ("shutdown", "Shutdown system immediately"),
+            ("power 120", "Shutdown after 120 seconds"),
+            ("shutdown -c", "Cancel scheduled shutdown")
+        ],
+        "tips": ["Save work before shutdown", "Use -c to cancel", "Supports countdown timer"],
+        "requires": "Administrator privileges"
+    },
+
+    "tcp_ip": {
+        "name": "tcp_ip",
+        "category": "network",
+        "description": "Network diagnostics and TCP/IP utilities - connectivity testing and network analysis",
+        "aliases": ["net", "network", "ping", "ipconfig"],
+        "syntax": ["tcp_ip", "tcp_ip [host]", "tcp_ip analyze"],
+        "features": [
+            "Network connectivity testing",
+            "IP configuration display",
+            "DNS resolution",
+            "Route analysis",
+            "Network adapter information"
+        ],
+        "examples": [
+            ("tcp_ip", "Show network status"),
+            ("tcp_ip google.com", "Test connectivity to host"),
+            ("tcp_ip analyze", "Analyze network configuration")
+        ],
+        "tips": ["Displays local and public IP", "Network status check", "DNS and routing information"],
+        "storage": r"%userprofile%\.polsoft\psCli\network"
+    },
+
+    "tree": {
+        "name": "tree",
+        "category": "file system",
+        "description": "Directory tree viewer - displays folder structure in visual tree format",
+        "aliases": ["dtree", "filetree"],
+        "syntax": ["tree [path] [depth]"],
+        "features": [
+            "Visual directory tree display",
+            "Configurable depth limit",
+            "File and folder counts",
+            "ASCII art formatting",
+            "Recursive folder traversal"
+        ],
+        "examples": [
+            ("tree", "Show current directory tree"),
+            ("tree .", "Show tree of current folder"),
+            ("tree . 3", "Show tree 3 levels deep")
+        ],
+        "tips": ["Limit depth for large folders", "Visual ASCII representation", "Shows folder structure clearly"],
+        "output": "ASCII tree with folders and file counts"
+    },
+
+    "aliases": {
+        "name": "aliases",
+        "category": "configuration",
+        "description": "Command aliases management - view and manage command shortcuts",
+        "aliases": ["alias", "shortcuts"],
+        "syntax": ["aliases", "aliases list", "aliases add <alias> <command>"],
+        "features": [
+            "List all command aliases",
+            "View alias definitions",
+            "Add custom aliases",
+            "Remove aliases",
+            "Save alias configuration"
+        ],
+        "examples": [
+            ("aliases", "Show all aliases"),
+            ("aliases list", "Display alias list"),
+            ("aliases add g games", "Create shortcut 'g' for 'games'")
+        ],
+        "tips": ["Aliases reduce typing", "Case-insensitive", "Persist across sessions"],
+        "storage": r"%userprofile%\.polsoft\psCli\aliases.json"
+    },
+
+    "html": {
+        "name": "html",
+        "category": "web",
+        "description": "HTML report generator - creates formatted HTML reports from CLI output",
+        "aliases": ["report", "export"],
+        "syntax": ["html [title] [content]"],
+        "features": [
+            "Generate HTML reports",
+            "Styled output formatting",
+            "Report archiving",
+            "Template support",
+            "CSS styling"
+        ],
+        "examples": [
+            ("html \"System Report\" content", "Generate HTML report"),
+            ("report", "Create system report")
+        ],
+        "tips": ["Reports are color-formatted", "Saved to Reports folder", "Easy sharing and viewing"],
+        "storage": r"%userprofile%\.polsoft\psCli\Reports"
     }
 }
 
@@ -640,7 +815,8 @@ def show_help(cmd_name=None):
         padding1 = 82 - len(line1) - 4
         print(f"{CYAN}{BOLD}║ {line1}{' ' * max(0, padding1)}║{RESET}")
         
-        line2 = f"  Professional CLI environment with {len(PLUGINS_DB)} documented modules  "
+        module_count = len(PLUGINS_DB)
+        line2 = f"  Professional CLI with {module_count} documented modules - Updated 2026-01-19  "
         padding2 = 82 - len(line2) - 4
         print(f"{CYAN}{BOLD}║ {line2}{' ' * max(0, padding2)}║{RESET}")
         

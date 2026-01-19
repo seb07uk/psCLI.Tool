@@ -5,8 +5,10 @@
 > *Transform your terminal into a powerful development environment with professional-grade tools, games, and utilities.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/Python-3.7%2B-blue)](https://www.python.org/)
+[![Python Version](https://img.shields.io/badge/Python-3.7+-blue)](https://www.python.org/)
+[![Python Tested](https://img.shields.io/badge/Tested%20on-3.14.2-brightgreen)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D4)](https://www.microsoft.com/en-us/windows)
+[![Modules](https://img.shields.io/badge/Documented%20Modules-34-blueviolet)](https://github.com/seb07uk/psCLI.Tool)
 
 ---
 
@@ -97,7 +99,7 @@ psCLI.Tool/
 
 ### 📋 Requirements
 
-- **Python 3.7+** — Ensure Python is installed and available in PATH
+- **Python 3.7+** (tested with 3.14.2) — Ensure Python is installed and available in PATH
 - **Windows OS** — Optimized for Windows (PowerShell support for advanced features)
 - **ANSI color support** — Enabled automatically in modern terminals
 
@@ -181,7 +183,7 @@ python cli.py ascii parrot
 |---------|---------|-------------|
 | `help` | `h`, `?` | 📚 Professional help system for all plugins |
 | `core` | `sys`, `base` | 🔧 Core system modules viewer |
-| `games` | `play`, `g` | 🎮 Games center with Tic-Tac-Toe, Snake, Tetris |
+| `games` | `play`, `g` | 🎮 Games center with Tic-Tac-Toe, Snake, Tetris, Hangman, Racer, Rockpaper-Scissors |
 | `ascii` | `art`, `a` | 🎭 ASCII Center launcher for animations |
 
 ### 🖥️ Office Group Commands
@@ -522,11 +524,102 @@ installer adb-installer
 ```
 
 **Features:**
-- 📥 Intelligent scanning of `/plugins` folder for installer scripts
-- 🏷️ Smart filtering by installer classification (`__group__ = "installer"`)
+- 📥 Intelligent scanning of `/install` folder for installer scripts
+- 🏷️ Smart filtering by installer classification
 - 📊 Rich metadata display: description, aliases, author, and more
 - 🔄 Unified support for multiple formats: Python, PowerShell, batch, and executables
 - 🎯 One-command execution with argument pass-through
+
+### 🏥 Health Tools (`health.py`)
+
+System health diagnostics and maintenance utilities:
+
+```bash
+psCLI.Tool > health
+```
+
+**Features:**
+- 📊 System health diagnostics
+- ⚙️ Performance monitoring
+- 🛠️ Health restoration scripts
+- 🧹 System cleanup utilities
+
+### 🔄 Reboot (`reboot.py`)
+
+System reboot utility with optional delayed restart:
+
+```bash
+psCLI.Tool > reboot
+psCLI.Tool > reboot 60
+```
+
+**Features:**
+- ⏱️ Immediate system restart
+- ⏳ Delayed restart with countdown
+- 🧹 Clean shutdown before restart
+- 📝 Process termination
+
+### 🔌 Shutdown (`shutdown.py`)
+
+System shutdown utility with delayed shutdown support:
+
+```bash
+psCLI.Tool > shutdown
+psCLI.Tool > shutdown 120
+```
+
+**Features:**
+- 🛑 Immediate system shutdown
+- ⏳ Delayed shutdown with countdown timer
+- ❌ Cancel scheduled shutdown with `-c` flag
+- 📢 Message display before shutdown
+
+### 🌐 TCP/IP Tools (`tcp_ip.py`)
+
+Network diagnostics and TCP/IP utilities:
+
+```bash
+psCLI.Tool > tcp_ip
+psCLI.Tool > tcp_ip google.com
+psCLI.Tool > tcp_ip analyze
+```
+
+**Features:**
+- 📡 Network connectivity testing
+- 🖥️ IP configuration display
+- 🔍 DNS resolution
+- 🛣️ Route analysis
+- 📊 Network adapter information
+
+### 🎨 Aliases Management (`aliases.py`)
+
+Command aliases and shortcuts management:
+
+```bash
+psCLI.Tool > aliases
+psCLI.Tool > aliases list
+```
+
+**Features:**
+- 📋 List all command aliases
+- ➕ Add custom aliases
+- ❌ Remove aliases
+- 💾 Save alias configuration
+
+### 📄 HTML Reports (`html.py`)
+
+HTML report generator for CLI output:
+
+```bash
+psCLI.Tool > html "System Report"
+```
+
+**Features:**
+- 📊 Generate formatted HTML reports
+- 🎨 Styled output formatting
+- 📁 Report archiving
+- 📝 Template support
+- 🎯 CSS styling
 
 ---
 
@@ -569,6 +662,13 @@ psCLI.Tool > games
 > racer
 ```
 
+### 🎮 Hangman
+Guess the word before running out of attempts
+```bash
+psCLI.Tool > games
+> hangman
+```
+
 ---
 
 ## 🔧 Tools
@@ -598,6 +698,8 @@ installer adb-installer
 - **License**: MIT
 - **Created**: January 18, 2026
 - **Latest Version**: 3.1.0
+- **Last Updated**: January 19, 2026
+- **Documented Modules**: 34
 
 ### 🤝 Contributing
 
@@ -658,8 +760,9 @@ copies or substantial portions of the Software.
 
 <div align="center">
 
-**Version**: 3.1.0 (with Tree Visualizer)  
-**Last Updated**: January 19, 2026
+**Version**: 3.1.0 (with 34 documented modules)  
+**Last Updated**: January 19, 2026  
+**Python Version**: 3.7+ (tested on 3.14.2)
 
 Made with ❤️ by Sebastian Januchowski
 

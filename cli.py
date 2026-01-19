@@ -3,12 +3,14 @@ import sys
 import subprocess
 import inspect
 import importlib
+import importlib.util
 import json
 import socket
 import urllib.request
 import platform
 import threading
 import webbrowser
+import re
 
 from plugins import owner
 
@@ -28,6 +30,7 @@ class Color:
     RED = '\033[91m'
     GRAY = '\033[90m'
     WHITE = '\033[97m'
+    MAGENTA = '\033[95m'
     BOLD = '\033[1m'
     RESET = '\033[0m'
 
@@ -181,6 +184,40 @@ class Dispatcher:
                     self._register_external_binary(filename, name, ext, full_path)
             except Exception as e:
                 print(f"{Color.RED}[ERROR] Loading {filename}: {e}{Color.RESET}")
+        
+        # Load games
+        games_path = os.path.join(self.root_dir, "games")
+        if os.path.exists(games_path):
+            for filename in os.listdir(games_path):
+                name, ext = os.path.splitext(filename)
+                ext = ext.lower()
+                full_path = os.path.join(games_path, filename)
+                
+                if os.path.isdir(full_path) or filename.startswith("__"):
+                    continue
+                
+                try:
+                    if ext == ".py":
+                        self._load_game_module(name, full_path)
+                except Exception as e:
+                    print(f"{Color.RED}[ERROR] Loading game {filename}: {e}{Color.RESET}")
+        
+        # Load ASCII tools
+        ascii_path = os.path.join(self.root_dir, "ascii")
+        if os.path.exists(ascii_path):
+            for filename in os.listdir(ascii_path):
+                name, ext = os.path.splitext(filename)
+                ext = ext.lower()
+                full_path = os.path.join(ascii_path, filename)
+                
+                if os.path.isdir(full_path) or filename.startswith("__"):
+                    continue
+                
+                try:
+                    if ext in [".bat", ".cmd", ".ps1", ".exe", ".vbs"]:
+                        self._register_external_binary(filename, name, ext, full_path)
+                except Exception as e:
+                    print(f"{Color.RED}[ERROR] Loading ASCII tool {filename}: {e}{Color.RESET}")
 
     def _load_python_module(self, name):
         try:
@@ -216,11 +253,68 @@ class Dispatcher:
         except Exception as e:
             print(f"{Color.RED}[ERROR] Module {name}.py: {e}{Color.RESET}")
 
-    def _register_external_binary(self, filename, name, ext, path):
-        meta = self._get_json_metadata(filename)
+    def _load_game_module(self, name, full_path):
+        """Load a game module from the games directory."""
+        try:
+            # Add games path to sys.path temporarily
+            games_path = os.path.dirname(full_path)
+            if games_path not in sys.path:
+                sys.path.insert(0, games_path)
+            
+            # Import the game module
+            if name in sys.modules:
+                del sys.modules[name]
+            
+            spec = importlib.util.spec_from_file_location(name, full_path)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[name] = module
+            spec.loader.exec_module(module)
+            
+            base_meta = {
+                "author": getattr(module, "__author__", "Unknown"),
+                "category": getattr(module, "__category__", "games"),
+                "group": getattr(module, "__group__", "games"),
+                "desc": getattr(module, "__desc__", None)
+            }
+
+            for _, obj in inspect.getmembers(module):
+                if inspect.isfunction(obj) and hasattr(obj, "is_command"):
+                    cmd_name = getattr(obj, "command_name", name)
+                    cmd_meta = base_meta.copy()
+                    
+                    doc = (obj.__doc__ or "").strip().split('\n')[0]
+                    if doc:
+                        cmd_meta["desc"] = doc
+                    elif not cmd_meta["desc"]:
+                        cmd_meta["desc"] = f"Game: {name}"
+
+                    obj.meta = cmd_meta
+                    self.commands[cmd_name] = obj
+                    
+                    for alias in getattr(obj, "aliases", []):
+                        self.aliases[alias] = cmd_name
+                    
+                    return  # Found the command, exit
+            
+            # If no command decorated function found, create a wrapper
+            if hasattr(module, 'main'):
+                def game_wrapper(*args):
+                    module.main()
+                
+                game_wrapper.meta = base_meta
+                game_wrapper.meta["desc"] = getattr(module, "__desc__", f"Play {name}")
+                self.commands[name] = game_wrapper
+                
+        except Exception as e:
+            print(f"{Color.RED}[ERROR] Loading game {name}.py: {e}{Color.RESET}")
+
+    def _register_external_binary(self, filename, name, ext, full_path):
+        """Register external binary files (.bat, .cmd, .ps1, .exe, .vbs)."""
+        meta = self._get_metadata_from_json(filename)
+        
         def external_call(*args):
-            cmd_args = ["powershell", "-ExecutionPolicy", "Bypass", "-File", path] if ext == ".ps1" else \
-                       ["cscript", "//nologo", path] if ext == ".vbs" else [path]
+            cmd_args = ["powershell", "-ExecutionPolicy", "Bypass", "-File", full_path] if ext == ".ps1" else \
+                       ["cscript", "//nologo", full_path] if ext == ".vbs" else [full_path]
             try:
                 subprocess.run(cmd_args + list(args), shell=(ext in [".bat", ".cmd"]), check=True)
             except Exception as e:
@@ -229,8 +323,146 @@ class Dispatcher:
         external_call.is_command = True
         external_call.meta = meta
         self.commands[name] = external_call
+        
         for alias in meta.get("aliases", []):
             self.aliases[alias] = name
+
+    def _get_metadata_from_json(self, filename):
+        """Extract metadata from JSON file."""
+        meta = {"desc": "No description", "aliases": []}
+        base = f"{filename}.json"
+        json_path = os.path.join(self.metadata_path, base)
+        
+        if os.path.exists(json_path):
+            try:
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    data = f.read()
+                    m = re.search(r'"desc"\s*:\s*"([^"]+)"', data)
+                    if m: meta["desc"] = m.group(1)
+                    m = re.search(r'"aliases"\s*:\s*\[(.*?)\]', data, re.DOTALL)
+                    if m:
+                        aliases_str = m.group(1)
+                        meta["aliases"] = [a.strip().strip('\'"') for a in aliases_str.split(',') if a.strip()]
+            except:
+                pass
+        return meta
+
+    def display_all_modules(self):
+        """Display all modules, tools and aliases from all directories."""
+        if self.settings.get("ui", {}).get("clear_on_menu", True):
+            self._clear_screen()
+        
+        print(f"{Color.CYAN}{Color.BOLD}ALL AVAILABLE MODULES, COMMANDS & ALIASES{Color.RESET}\n")
+        print(f"{Color.BOLD}{'NAME/COMMAND':<25} | {'DESCRIPTION':<45} | {'ALIASES':<25}{Color.RESET}")
+        print(f"{Color.GRAY}{'-' * 100}{Color.RESET}")
+        
+        # Python Modules (loaded commands)
+        py_modules = []
+        for name, func in self.commands.items():
+            if str(func.meta.get('group', '')).lower() != "menu":
+                aliases_str = ', '.join(func.meta.get('aliases', []))
+                py_modules.append((name, func, aliases_str))
+        
+        if py_modules:
+            print(f"{Color.CYAN}--- Python Modules ---{Color.RESET}")
+        sorted_py = sorted(py_modules, key=lambda x: (
+            str(x[1].meta.get('group', '')).lower(),
+            str(x[1].meta.get('category', '')).lower(),
+            x[0].lower()
+        ))
+        for name, func, aliases_str in sorted_py:
+            desc = func.meta.get('desc', 'No description')[:45]
+            print(f"{Color.CYAN}{name:<25}{Color.RESET} | {desc:<45} | {aliases_str:<25}")
+        
+        # Health Tools
+        health_dir = os.path.join(self.root_dir, "health")
+        if os.path.exists(health_dir):
+            health_tools = []
+            for f in os.listdir(health_dir):
+                if os.path.splitext(f)[1].lower() in [".bat", ".cmd", ".ps1", ".vbs", ".exe"]:
+                    name = os.path.splitext(f)[0]
+                    meta = self._get_metadata_from_json(f)
+                    health_tools.append((name, meta))
+            
+            if health_tools:
+                print(f"\n{Color.YELLOW}--- Health Tools ---{Color.RESET}")
+            sorted_health = sorted(health_tools, key=lambda x: (
+                str(x[1].get('group', '')).lower(),
+                str(x[1].get('category', '')).lower(),
+                x[0].lower()
+            ))
+            for name, meta in sorted_health:
+                aliases_str = ', '.join(meta.get('aliases', []))
+                desc = meta.get('desc', 'No description')[:45]
+                print(f"{Color.WHITE}{name:<25}{Color.RESET} | {desc:<45} | {aliases_str:<25}")
+        
+        # System Tools
+        tools_dir = os.path.join(self.root_dir, "tools")
+        if os.path.exists(tools_dir):
+            system_tools = []
+            for f in os.listdir(tools_dir):
+                if os.path.splitext(f)[1].lower() in [".bat", ".cmd", ".ps1", ".vbs", ".exe"]:
+                    name = os.path.splitext(f)[0]
+                    meta = self._get_metadata_from_json(f)
+                    system_tools.append((name, meta))
+            
+            if system_tools:
+                print(f"\n{Color.MAGENTA}--- System Tools ---{Color.RESET}")
+            sorted_system = sorted(system_tools, key=lambda x: (
+                str(x[1].get('group', '')).lower(),
+                str(x[1].get('category', '')).lower(),
+                x[0].lower()
+            ))
+            for name, meta in sorted_system:
+                aliases_str = ', '.join(meta.get('aliases', []))
+                desc = meta.get('desc', 'No description')[:45]
+                print(f"{Color.WHITE}{name:<25}{Color.RESET} | {desc:<45} | {aliases_str:<25}")
+        
+        # Games
+        games_dir = os.path.join(self.root_dir, "games")
+        if os.path.exists(games_dir):
+            games = []
+            for f in os.listdir(games_dir):
+                if f.endswith('.py') and not f.startswith('__'):
+                    name = os.path.splitext(f)[0]
+                    meta = self._get_metadata_from_json(f)
+                    games.append((name, meta))
+            
+            if games:
+                print(f"\n{Color.GREEN}--- Games ---{Color.RESET}")
+            sorted_games = sorted(games, key=lambda x: (
+                str(x[1].get('group', '')).lower(),
+                str(x[1].get('category', '')).lower(),
+                x[0].lower()
+            ))
+            for name, meta in sorted_games:
+                aliases_str = ', '.join(meta.get('aliases', []))
+                desc = meta.get('desc', 'No description')[:45]
+                print(f"{Color.WHITE}{name:<25}{Color.RESET} | {desc:<45} | {aliases_str:<25}")
+        
+        # ASCII Tools
+        ascii_dir = os.path.join(self.root_dir, "ascii")
+        if os.path.exists(ascii_dir):
+            ascii_tools = []
+            for f in os.listdir(ascii_dir):
+                if os.path.splitext(f)[1].lower() in [".bat", ".cmd", ".ps1", ".vbs", ".exe"]:
+                    name = os.path.splitext(f)[0]
+                    meta = self._get_metadata_from_json(f)
+                    ascii_tools.append((name, meta))
+            
+            if ascii_tools:
+                print(f"\n{Color.BLUE}--- ASCII Tools ---{Color.RESET}")
+            sorted_ascii = sorted(ascii_tools, key=lambda x: (
+                str(x[1].get('group', '')).lower(),
+                str(x[1].get('category', '')).lower(),
+                x[0].lower()
+            ))
+            for name, meta in sorted_ascii:
+                aliases_str = ', '.join(meta.get('aliases', []))
+                desc = meta.get('desc', 'No description')[:45]
+                print(f"{Color.WHITE}{name:<25}{Color.RESET} | {desc:<45} | {aliases_str:<25}")
+        
+        print(f"\n{Color.GRAY}{'-' * 100}{Color.RESET}")
 
     def display_list(self, filter_group=None):
         if self.settings.get("ui", {}).get("clear_on_menu", True):
@@ -384,6 +616,10 @@ if __name__ == "__main__":
                 
                 if cmd == "all":
                     cli.display_list()
+                    continue
+                
+                if cmd in ["modules", "mod"]:
+                    cli.display_all_modules()
                     continue
                 
                 if cmd == "menu":

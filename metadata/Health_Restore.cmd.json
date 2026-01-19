@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "system health",
+  "group": "maintenance",
+  "desc": "Windows recovery and repair tool",
+  "aliases": ["whr", "repair"]
+}

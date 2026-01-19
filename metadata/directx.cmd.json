@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "graphics",
+  "group": "install",
+  "desc": "DirectX installation and update tool",
+  "aliases": ["dx", "directx"]
+}
