@@ -756,6 +756,36 @@ PLUGINS_DB = {
         ],
         "tips": ["Reports are color-formatted", "Saved to Reports folder", "Easy sharing and viewing"],
         "storage": r"%userprofile%\.polsoft\psCli\Reports"
+    },
+    
+    "integrate": {
+        "name": "integrate",
+        "category": "maintenance",
+        "description": "Automatyczna integracja: wykrywa moduły, tworzy metadane i rejestruje",
+        "aliases": ["autometadata", "genmeta"],
+        "syntax": ["integrate", "autometadata", "genmeta"],
+        "examples": [
+            ("integrate", "Wykryj i zintegruj nowe moduły")
+        ],
+        "tips": [
+            "Automatycznie tworzy metadane w katalogu metadata",
+            "Obsługuje plugins/, games/, ascii/, health/, tools/, install/"
+        ]
+    },
+    
+    "build": {
+        "name": "build",
+        "category": "build",
+        "description": "Build standalone psCLI.exe (PyInstaller onefile)",
+        "aliases": ["pack", "compress"],
+        "syntax": ["build", "pack", "compress"],
+        "examples": [
+            ("build", "Zbuduj psCLI.exe")
+        ],
+        "tips": [
+            "Dodaje ikonę, jeśli plik icon.ico istnieje",
+            "Uwzględnia dane: plugins, games, metadata, ascii, health, tools, install"
+        ]
     }
 }
 

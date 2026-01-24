@@ -769,3 +769,50 @@ Made with ❤️ by Sebastian Januchowski
 [⬆ Back to top](#)
 
 </div>
+
+---
+
+## 🆕 Aktualizacje i integracje
+
+### 🧩 Automatyczna integracja metadanych
+- Nowa komenda: integrate (aliasy: autometadata, genmeta)
+- Moduł: [integrator.py](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/plugins/integrator.py)
+- Działanie:
+  - Skanuje katalogi: plugins, games, ascii, health, tools, install
+  - Tworzy brakujące metadane JSON w [metadata](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata)
+  - Dla plików .py odczytuje: __author__, __category__, __group__, __desc
+- Użycie:
+
+```bash
+psCLI.Tool > integrate
+```
+
+### 🎮 Integracja gier
+- Gry w [games](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/games) rejestrowane są automatycznie, jeśli posiadają funkcję main() lub menu()
+- Metadane gier znajdują się w [metadata](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata) jako pliki <nazwa>.json (bez rozszerzenia .py)
+- Przykłady:
+  - [Tic-Tac-Toe.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Tic-Tac-Toe.json)
+  - [Snake CLI.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Snake%20CLI.json)
+  - [Rock-Paper-Scissors.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Rock-Paper-Scissors.json)
+  - [Tetris Mini.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Tetris%20Mini.json)
+  - [Racer CLI.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Racer%20CLI.json)
+
+### 🏗️ Budowa standalone (psCLI.exe)
+- Skrypt budujący: [build.ps1](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/build.ps1)
+- Wspiera dołączanie katalogów: plugins, games, metadata, ascii, health, tools, install
+- Automatycznie dodaje ikonę, jeśli plik [icon.ico](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/icon.ico) istnieje
+- Uruchomienie:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File build.ps1
+powershell -ExecutionPolicy Bypass -File build.ps1 -Clean
+```
+
+### 🔧 Komenda „build” w CLI
+- [cli.py](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/cli.py) rejestruje [build.ps1](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/build.ps1) jako komendę:
+  - build (aliasy: pack, compress)
+  - Uruchamia PowerShell z -ExecutionPolicy Bypass -File build.ps1
+
+### 📦 Lokalizacja binarki
+- Po kompilacji plik wykonywalny znajduje się w:
+  - [dist/psCLI.exe](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/dist/psCLI.exe)
