@@ -1,7 +1,7 @@
 {
   "author": "massgravel",
   "category": "microsoft",
-  "group": "activator",
+  "group": "hacking",
   "desc": "Microsoft Activation Scripts (MAS) - Windows/Office activation tool",
   "aliases": ["mas", "kms"]
 }

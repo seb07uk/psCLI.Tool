@@ -219,7 +219,10 @@ class RacerCLI:
             self.root.after(1500)
         self.show_high_scores()
 
-if __name__ == "__main__":
+def main():
     root = tk.Tk()
     app = RacerCLI(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()

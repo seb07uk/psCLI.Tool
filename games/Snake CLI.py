@@ -208,5 +208,8 @@ def start_game_flow():
         print(f"{WHITE}Do you want to play again? (Y/N){RESET}")
         if msvcrt.getch().decode().upper() != 'Y': return
 
-if __name__ == "__main__":
+def main():
     main_menu()
+
+if __name__ == "__main__":
+    main()

@@ -1,7 +1,0 @@
-{
-  "author": "Sebastian Januchowski",
-  "category": "word game",
-  "group": "games",
-  "desc": "Hangman word guessing game",
-  "aliases": ["hang", "word"]
-}

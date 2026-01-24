@@ -205,7 +205,10 @@ class Tetris:
             self.move(0, 1)
             self.root.after(self.speed, self.run_game_loop)
 
-if __name__ == "__main__":
+def main():
     root = tk.Tk()
     game = Tetris(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()

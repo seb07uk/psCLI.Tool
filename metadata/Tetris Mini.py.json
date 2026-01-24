@@ -1,7 +1,0 @@
-{
-  "author": "Sebastian Januchowski",
-  "category": "puzzle game",
-  "group": "games",
-  "desc": "Mini version of Tetris block stacking game",
-  "aliases": ["tetris", "blocks", "mini"]
-}

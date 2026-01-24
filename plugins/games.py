@@ -23,12 +23,30 @@ HEADER = r"""
           `8888888P'   .8'       `8. `88888.  ,8'                    `8.`8888.   8 888888888888    `Y8888P8P88P'
 """
 
-GAMES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "games"))
+import json
 
-def get_metadata(file_path):
-    """Reads game description without importing the file."""
+GAMES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "games"))
+METADATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "metadata"))
+
+def get_metadata(filename):
+    """Reads game description from JSON metadata or file content."""
     meta = {"desc": "No description"}
+    name = os.path.splitext(filename)[0]
+    
+    # Try JSON first
+    json_path = os.path.join(METADATA_DIR, f"{name}.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    if "desc" in data: meta["desc"] = data["desc"]
+                    return meta
+        except: pass
+
+    # Fallback to regex from file content
     try:
+        file_path = os.path.join(GAMES_DIR, filename)
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             desc_match = re.search(r'__desc__\s*=\s*["\'](.*?)["\']', content)

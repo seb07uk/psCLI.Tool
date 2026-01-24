@@ -50,7 +50,10 @@ def command(name=None, aliases=None):
 # --- DISPATCHER CLASS (2026© Terminal psCLI) ---
 class Dispatcher:
     def __init__(self, plugins_folder="plugins", metadata_folder="metadata"):
-        self.root_dir = os.path.dirname(os.path.abspath(__file__))
+        if getattr(sys, "frozen", False):
+            self.root_dir = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+        else:
+            self.root_dir = os.path.dirname(os.path.abspath(__file__))
         self.settings_path = os.path.expandvars(r"%userprofile%\.polsoft\psCli\settings\terminal.json")
         self.settings = self._load_settings()
         
@@ -219,6 +222,14 @@ class Dispatcher:
                 except Exception as e:
                     print(f"{Color.RED}[ERROR] Loading ASCII tool {filename}: {e}{Color.RESET}")
 
+        # Register root build script as command
+        build_script = os.path.join(self.root_dir, "build.ps1")
+        if os.path.exists(build_script):
+            try:
+                self._register_external_binary("build.ps1", "build", ".ps1", build_script)
+            except Exception as e:
+                print(f"{Color.RED}[ERROR] Loading build.ps1: {e}{Color.RESET}")
+
     def _load_python_module(self, name):
         try:
             mod_name = f"plugins.{name}"
@@ -270,15 +281,26 @@ class Dispatcher:
             sys.modules[name] = module
             spec.loader.exec_module(module)
             
-            base_meta = {
-                "author": getattr(module, "__author__", "Unknown"),
-                "category": getattr(module, "__category__", "games"),
-                "group": getattr(module, "__group__", "games"),
-                "desc": getattr(module, "__desc__", None)
-            }
+            # Try to load metadata from JSON first, then fallback to module attributes
+            meta = self._get_metadata_from_json(name)
+            
+            # If JSON metadata is empty/default, try module attributes
+            if meta.get("desc") == "No description":
+                 meta["author"] = getattr(module, "__author__", "Unknown")
+                 meta["category"] = getattr(module, "__category__", "games")
+                 meta["group"] = getattr(module, "__group__", "games")
+                 meta["desc"] = getattr(module, "__desc__", None)
+            
+            # Ensure group is set correctly if read from JSON
+            if "group" not in meta:
+                meta["group"] = getattr(module, "__group__", "games")
+
+            base_meta = meta
+            found_command = False
 
             for _, obj in inspect.getmembers(module):
                 if inspect.isfunction(obj) and hasattr(obj, "is_command"):
+                    found_command = True
                     cmd_name = getattr(obj, "command_name", name)
                     cmd_meta = base_meta.copy()
                     
@@ -293,17 +315,29 @@ class Dispatcher:
                     
                     for alias in getattr(obj, "aliases", []):
                         self.aliases[alias] = cmd_name
-                    
-                    return  # Found the command, exit
             
-            # If no command decorated function found, create a wrapper
-            if hasattr(module, 'main'):
-                def game_wrapper(*args):
-                    module.main()
-                
-                game_wrapper.meta = base_meta
-                game_wrapper.meta["desc"] = getattr(module, "__desc__", f"Play {name}")
-                self.commands[name] = game_wrapper
+            # If no explicit command found, try to register main entry point
+            if not found_command:
+                entry_point = getattr(module, "main", getattr(module, "menu", None))
+                if callable(entry_point):
+                    def game_wrapper(*args):
+                        entry_point()
+                    
+                    game_wrapper.is_command = True
+                    game_wrapper.command_name = name
+                    game_wrapper.meta = base_meta.copy()
+                    if not game_wrapper.meta.get("desc"):
+                        game_wrapper.meta["desc"] = f"Game: {name}"
+                    
+                    self.commands[name] = game_wrapper
+                    
+                    # Register aliases from metadata if any
+                    for alias in base_meta.get("aliases", []):
+                        self.aliases[alias] = name
+            
+            # Legacy fallback (can be removed if above covers all cases)
+            if not found_command and name not in self.commands and hasattr(module, 'main'):
+                 pass # Already handled above
                 
         except Exception as e:
             print(f"{Color.RED}[ERROR] Loading game {name}.py: {e}{Color.RESET}")
@@ -329,21 +363,17 @@ class Dispatcher:
 
     def _get_metadata_from_json(self, filename):
         """Extract metadata from JSON file."""
-        meta = {"desc": "No description", "aliases": []}
+        meta = {"desc": "No description", "aliases": [], "group": "utility", "category": "tool", "author": "Unknown"}
         base = f"{filename}.json"
         json_path = os.path.join(self.metadata_path, base)
         
         if os.path.exists(json_path):
             try:
                 with open(json_path, 'r', encoding='utf-8') as f:
-                    data = f.read()
-                    m = re.search(r'"desc"\s*:\s*"([^"]+)"', data)
-                    if m: meta["desc"] = m.group(1)
-                    m = re.search(r'"aliases"\s*:\s*\[(.*?)\]', data, re.DOTALL)
-                    if m:
-                        aliases_str = m.group(1)
-                        meta["aliases"] = [a.strip().strip('\'"') for a in aliases_str.split(',') if a.strip()]
-            except:
+                    data = json.load(f)
+                    if isinstance(data, dict):
+                        meta.update(data)
+            except Exception:
                 pass
         return meta
 
@@ -425,7 +455,7 @@ class Dispatcher:
             for f in os.listdir(games_dir):
                 if f.endswith('.py') and not f.startswith('__'):
                     name = os.path.splitext(f)[0]
-                    meta = self._get_metadata_from_json(f)
+                    meta = self._get_metadata_from_json(name)
                     games.append((name, meta))
             
             if games:
@@ -598,46 +628,60 @@ if __name__ == "__main__":
                 
                 prompt_fmt = cli.settings.get("ui", {}).get("default_prompt", "{root_dir} > ")
                 prompt_text = prompt_fmt.format(root_dir=os.path.basename(cli.root_dir))
-                prompt = f"{Color.CYAN}{prompt_text}{Color.RESET}"
+                prompt = f"{Color.CYAN}{prompt_text}{Color.RESET}"                
+                raw_input = input(prompt).strip()
+                if not raw_input: continue
                 
-                user_input = input(prompt).strip().split()
-                if not user_input: continue
+                # Support command chaining with '&'
+                # Handle quoted strings to avoid splitting '&' inside quotes could be complex, 
+                # but for simple usage split('&') is a good start.
+                commands = [c.strip() for c in raw_input.split('&') if c.strip()]
                 
-                cmd = user_input[0]
-                # Treat '#' as alias for 'menu' - check before .lower()
-                if cmd == "#":
-                    cmd = "menuallweb"
-                else:
-                    cmd = cmd.lower()
-                
-                args = user_input[1:]
-                
-                if cmd in ["exit", "quit"]: break
-                
-                if cmd == "all":
-                    cli.display_list()
-                    continue
-                
-                if cmd in ["modules", "mod"]:
-                    cli.display_all_modules()
-                    continue
-                
-                if cmd == "menu":
-                    cli.display_list("menu")
-                    continue
+                should_break = False
+                for cmd_str in commands:
+                    user_input = cmd_str.split()
+                    if not user_input: continue
+                    
+                    cmd = user_input[0]
+                    # Treat '#' as alias for 'menu' - check before .lower()
+                    if cmd == "#":
+                        cmd = "menuallweb"
+                    else:
+                        cmd = cmd.lower()
+                    
+                    args = user_input[1:]
+                    
+                    if cmd in ["exit", "quit"]: 
+                        should_break = True
+                        break
+                    
+                    if cmd == "all":
+                        cli.display_list()
+                        continue
+                    
+                    if cmd in ["modules", "mod"]:
+                        cli.display_all_modules()
+                        continue
+                    
+                    if cmd == "menu":
+                        cli.display_list("menu")
+                        continue
 
-                if cmd in ["reload", "r"]: 
-                    cli.settings = cli._load_settings()
-                    cli.load_plugins()
-                    groups = cli.get_all_groups()
-                    cli.display_list("menu" if "menu" in groups else None)
-                    continue
+                    if cmd in ["reload", "r"]: 
+                        cli.settings = cli._load_settings()
+                        cli.load_plugins()
+                        groups = cli.get_all_groups()
+                        cli.display_list("menu" if "menu" in groups else None)
+                        continue
 
-                if cmd in cli.get_all_groups():
-                    cli.display_list(cmd)
-                    continue
+                    if cmd in cli.get_all_groups():
+                        cli.display_list(cmd)
+                        continue
+                    
+                    cli.execute(cmd, *args)
                 
-                cli.execute(cmd, *args)
+                if should_break:
+                    break
 
             except (EOFError, KeyboardInterrupt):
                 break

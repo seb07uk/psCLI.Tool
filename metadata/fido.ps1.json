@@ -1,7 +1,7 @@
 {
   "author": "Pete Batard et al.",
   "category": "microsoft",
-  "group": "iso download",
+  "group": "hacking",
   "desc": "Fido - Microsoft Windows ISO downloader (PowerShell script)",
   "aliases": ["fido", "win-iso"]
 }

@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "maintenance",
+  "group": "python",
+  "desc": "Automatyczna integracja: wykrywa moduły, tworzy metadane i rejestruje",
+  "aliases": ["integrate", "autometadata", "genmeta"]
+}

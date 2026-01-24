@@ -1,7 +1,0 @@
-{
-  "author": "Sebastian Januchowski",
-  "category": "strategy game",
-  "group": "games",
-  "desc": "Classic Tic-Tac-Toe game for two players",
-  "aliases": ["ttt", "noughts", "crosses"]
-}

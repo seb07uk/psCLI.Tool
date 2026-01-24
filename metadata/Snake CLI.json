@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "arcade game",
+  "group": "games",
+  "desc": "Classic Snake arcade game with ASCII graphics",
+  "aliases": ["snake", "worm"]
+}

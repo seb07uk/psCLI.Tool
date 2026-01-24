@@ -1,7 +1,0 @@
-{
-  "author": "Sebastian Januchowski",
-  "category": "logic game",
-  "group": "games",
-  "desc": "Classic Rock-Paper-Scissors game against AI",
-  "aliases": ["rps", "rocks"]
-}
