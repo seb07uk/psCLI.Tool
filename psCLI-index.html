@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>psCLI.Tool - Professional Terminal CLI Framework</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --secondary: #00d4ff;
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            --accent: #58a6ff;
+            --code-bg: #010409;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(13, 17, 23, 0.95);
+            border-bottom: 1px solid #30363d;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo { font-weight: bold; font-size: 1.2rem; color: var(--primary); }
+        .nav-right { display: flex; align-items: center; gap: 2rem; }
+        .nav-links { display: flex; list-style: none; gap: 1.5rem; }
+        .nav-links a { text-decoration: none; color: var(--text-main); font-size: 0.9rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        .lang-switch {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .lang-switch:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Hero Section */
+        header {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            background: radial-gradient(circle at top, #1a2332 0%, #0d1117 100%);
+        }
+
+        .hero-title { font-size: 3rem; margin-bottom: 1rem; color: #fff; }
+        .hero-subtitle { font-size: 1.2rem; color: var(--text-dim); max-width: 800px; margin: 0 auto 2rem; }
+        .badge { background: #238636; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
+
+        /* Container */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+        section { padding: 4rem 0; border-bottom: 1px solid #21262d; }
+
+        h2 { font-size: 2rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; color: var(--secondary); }
+
+        /* Cards Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .card { 
+            background: var(--bg-card); 
+            padding: 1.5rem; 
+            border-radius: 8px; 
+            border: 1px solid #30363d;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card i { font-size: 1.5rem; color: var(--primary); margin-bottom: 1rem; }
+
+        /* Code Blocks */
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+            margin: 1rem 0;
+            position: relative;
+        }
+        code { font-family: 'Consolas', monospace; color: #d2a8ff; }
+        .shell-prefix { color: #7ee787; margin-right: 10px; }
+
+        /* Table Style */
+        .table-wrapper { overflow-x: auto; margin: 2rem 0; }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 8px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #30363d; }
+        th { background: #1f242c; color: var(--secondary); }
+
+        /* Footer */
+        footer { padding: 4rem 2rem; background: #010409; text-align: center; color: var(--text-dim); }
+        .footer-links { margin-top: 1rem; }
+        .footer-links a { color: var(--primary); text-decoration: none; margin: 0 10px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">🚀 psCLI.Tool</div>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="#features" data-lang-en="Features" data-lang-pl="Funkcje">Features</a></li>
+                <li><a href="#install" data-lang-en="Installation" data-lang-pl="Instalacja">Installation</a></li>
+                <li><a href="#commands" data-lang-en="Commands" data-lang-pl="Komendy">Commands</a></li>
+                <li><a href="#plugins" data-lang-en="Plugins" data-lang-pl="Pluginy">Plugins</a></li>
+                <li><a href="#games" data-lang-en="Games" data-lang-pl="Gry">Games</a></li>
+            </ul>
+            <button class="lang-switch" onclick="toggleLanguage()" id="langBtn">PL / EN</button>
+        </div>
+    </nav>
+
+    <header>
+        <div class="container">
+            <span class="badge" data-lang-en="Version 3.1.0" data-lang-pl="Wersja 3.1.0">Version 3.1.0</span>
+            <h1 class="hero-title">Professional Terminal CLI Framework</h1>
+            <p class="hero-subtitle" id="hero-sub">A sophisticated, extensible command-line interface framework for Windows with plugin architecture, dynamic command loading, and comprehensive help system.</p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <code style="background: #000; padding: 10px 20px; border-radius: 5px; border: 1px solid var(--primary);">git clone https://github.com/seb07uk/psCLI.Tool.git</code>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section id="features">
+            <h2 id="feat-h2"><i class="fas fa-star"></i> Key Features</h2>
+            <div class="grid">
+                <div class="card">
+                    <i class="fas fa-plug"></i>
+                    <h3 data-lang-en="Plugin Architecture" data-lang-pl="Architektura Pluginów">Plugin Architecture</h3>
+                    <p data-lang-en="Dynamically load Python modules, PowerShell scripts, batch files, and executables." data-lang-pl="Dynamiczne ładowanie modułów Python, skryptów PowerShell, plików batch i plików wykonywalnych.">Dynamically load Python modules, PowerShell scripts, batch files, and executables.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-palette"></i>
+                    <h3 data-lang-en="ANSI Color Support" data-lang-pl="Obsługa Kolorów ANSI">ANSI Color Support</h3>
+                    <p data-lang-en="Rich, colorized terminal output with themed commands and professional styling." data-lang-pl="Bogate, kolorowe wyjście terminala z motywami i profesjonalną stylizacją.">Rich, colorized terminal output with themed commands and professional styling.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-bolt"></i>
+                    <h3 data-lang-en="Hot Reload" data-lang-pl="Hot Reload">Hot Reload</h3>
+                    <p data-lang-en="Reload plugins instantly without restarting the CLI application." data-lang-pl="Przeładowuj pluginy w locie bez konieczności restartowania całej aplikacji CLI.">Reload plugins instantly without restarting the CLI application.</p>
+                </div>
+            </div>
+        </section>
+
+        
+
+        <section id="install">
+            <h2 id="inst-h2"><i class="fas fa-download"></i> Installation & Setup</h2>
+            <p id="inst-p">Requirements: Python 3.7+ (tested with 3.14.2) and Windows OS.</p>
+            <pre><code><span class="shell-prefix"># Clone repository</span>
+git clone https://github.com/seb07uk/psCLI.Tool.git
+cd psCLI.Tool
+
+<span class="shell-prefix"># Create venv</span>
+python -m venv .venv
+.venv\Scripts\activate
+
+<span class="shell-prefix"># Run application</span>
+python cli.py</code></pre>
+            <p><small><i class="fas fa-info-circle"></i> <span id="inst-small">The CLI automatically creates settings in</span> <code>%USERPROFILE%\.polsoft\psCli\</code></small></p>
+        </section>
+
+        <section id="commands">
+            <h2 id="comm-h2"><i class="fas fa-terminal"></i> Available Commands</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-lang-en="Command" data-lang-pl="Komenda">Command</th>
+                            <th data-lang-en="Aliases" data-lang-pl="Aliasy">Aliases</th>
+                            <th data-lang-en="Description" data-lang-pl="Opis">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>help</code></td><td>h, ?</td><td data-lang-en="Professional help system" data-lang-pl="Profesjonalny system pomocy">Professional help system</td></tr>
+                        <tr><td><code>calculator</code></td><td>calc, math</td><td data-lang-en="Scientific calculator with history" data-lang-pl="Kalkulator naukowy z historią">Scientific calculator with history</td></tr>
+                        <tr><td><code>file</code></td><td>fm, fileman</td><td data-lang-en="File Manager CLI" data-lang-pl="Menedżer plików CLI">File Manager CLI</td></tr>
+                        <tr><td><code>tree</code></td><td>ls</td><td data-lang-en="Visualize directory structure" data-lang-pl="Wizualizacja struktury katalogów">Visualize directory structure</td></tr>
+                        <tr><td><code>sudo</code></td><td>admin</td><td data-lang-en="Run with admin privileges" data-lang-pl="Uruchamianie z uprawnieniami admina">Run with admin privileges</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="plugins">
+            <h2 id="plug-h2"><i class="fas fa-code"></i> Creating Custom Plugins</h2>
+            <p id="plug-p">Create a new file in the <code>plugins/</code> directory to extend functionalities:</p>
+            <pre><code><span style="color: #ff7b72;">from</span> cli <span style="color: #ff7b72;">import</span> command, Color
+
+__author__ = <span style="color: #a5d6ff;">"Your Name"</span>
+__group__ = <span style="color: #a5d6ff;">"utility"</span>
+
+<span style="color: #d2a8ff;">@command</span>(name=<span style="color: #a5d6ff;">"hello"</span>)
+<span style="color: #ff7b72;">def</span> <span style="color: #d2a8ff;">hello_cmd</span>(*args):
+    <span style="color: #79c0ff;">print</span>(f<span style="color: #a5d6ff;">"{Color.GREEN}Hello from plugin!{Color.RESET}"</span>)</code></pre>
+        </section>
+
+        <section id="games">
+            <h2 id="game-h2"><i class="fas fa-gamepad"></i> Games Center</h2>
+            <p id="game-p">Integrated terminal games for a quick break:</p>
+            <div class="grid">
+                <div class="card">
+                    <h3>🐍 Snake CLI</h3>
+                    <p data-lang-en="Classic snake game directly in your terminal." data-lang-pl="Klasyczna gra w węża bezpośrednio w Twoim terminalu.">Classic snake game directly in your terminal.</p>
+                </div>
+                <div class="card">
+                    <h3>❌ Tic-Tac-Toe</h3>
+                    <p data-lang-en="Battle against AI in Noughts and Crosses." data-lang-pl="Pojedynek z AI w kółko i krzyżyk.">Battle against AI in Noughts and Crosses.</p>
+                </div>
+                <div class="card">
+                    <h3>🧩 Tetris Mini</h3>
+                    <p data-lang-en="Block-stacking puzzle in minimalist style." data-lang-pl="Układaj klocki w wersji minimalistycznej.">Block-stacking puzzle in minimalist style.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <p id="footer-author">Made with ❤️ by <strong>Sebastian Januchowski</strong></p>
+            <p id="footer-info">Last updated: Jan 19, 2026 | Documented 34 modules</p>
+            <div class="footer-links">
+                <a href="https://github.com/seb07uk/psCLI.Tool"><i class="fab fa-github"></i> GitHub</a>
+                <a href="mailto:polsoft.its@fastservice.com" data-lang-en="Contact" data-lang-pl="Kontakt">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentLang = 'en';
+
+        const translations = {
+            'hero-sub': {
+                'en': 'A sophisticated, extensible command-line interface framework for Windows with plugin architecture, dynamic command loading, and comprehensive help system.',
+                'pl': 'Wyrafinowany, rozszerzalny framework interfejsu wiersza poleceń dla systemu Windows z architekturą pluginów i dynamicznym ładowaniem komend.'
+            },
+            'feat-h2': { 'en': '<i class="fas fa-star"></i> Key Features', 'pl': '<i class="fas fa-star"></i> Kluczowe Funkcje' },
+            'inst-h2': { 'en': '<i class="fas fa-download"></i> Installation & Setup', 'pl': '<i class="fas fa-download"></i> Instalacja i Konfiguracja' },
+            'inst-p': { 'en': 'Requirements: Python 3.7+ (tested with 3.14.2) and Windows OS.', 'pl': 'Wymagania: Python 3.7+ (testowano na 3.14.2) oraz System Windows.' },
+            'inst-small': { 'en': 'The CLI automatically creates settings in', 'pl': 'Aplikacja automatycznie utworzy foldery ustawień w' },
+            'comm-h2': { 'en': '<i class="fas fa-terminal"></i> Available Commands', 'pl': '<i class="fas fa-terminal"></i> Dostępne Komendy' },
+            'plug-h2': { 'en': '<i class="fas fa-code"></i> Creating Custom Plugins', 'pl': '<i class="fas fa-code"></i> Tworzenie Pluginów' },
+            'plug-p': { 'en': 'Create a new file in the plugins/ directory to extend functionalities:', 'pl': 'Dodaj nowy plik w folderze plugins/, aby rozszerzyć możliwości systemu:' },
+            'game-h2': { 'en': '<i class="fas fa-gamepad"></i> Games Center', 'pl': '<i class="fas fa-gamepad"></i> Centrum Gier' },
+            'game-p': { 'en': 'Integrated terminal games for a quick break:', 'pl': 'Zintegrowane gry terminalowe dla chwili relaksu:' },
+            'footer-author': { 'en': 'Made with ❤️ by <strong>Sebastian Januchowski</strong>', 'pl': 'Zrobione z ❤️ przez <strong>Sebastian Januchowski</strong>' },
+            'footer-info': { 'en': 'Last updated: Jan 19, 2026 | Documented 34 modules', 'pl': 'Ostatnia aktualizacja: 19 stycznia 2026 | Dokumentacja obejmuje 34 moduły' }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'pl' : 'en';
+            
+            // Toggle generic data attributes
+            document.querySelectorAll('[data-lang-en]').forEach(el => {
+                el.innerHTML = el.getAttribute(`data-lang-${currentLang}`);
+            });
+
+            // Toggle specific IDs
+            for (let id in translations) {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = translations[id][currentLang];
+            }
+
+            document.documentElement.lang = currentLang;
+        }
+    </script>
+</body>
+</html>
