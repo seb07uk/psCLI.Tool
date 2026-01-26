@@ -14,6 +14,7 @@ REM Download the Office Deployment Tool
 echo Downloading Office Deployment Tool...
 curl -o "%OfficeToolPath%" "%OfficeToolURL%" -s --fail
 if errorlevel 1 (
+    powershell -NoProfile -Command "$pbg=[Console]::BackgroundColor;$pfg=[Console]::ForegroundColor;[Console]::BackgroundColor='DarkRed';[Console]::ForegroundColor='White';cls;Start-Sleep -Seconds 2;[Console]::BackgroundColor=$pbg;[Console]::ForegroundColor=$pfg;cls"
     echo ERROR: Failed to download Office Deployment Tool.
     exit /b 1
 )
@@ -22,6 +23,7 @@ REM Extract the Office Deployment Tool
 echo Extracting Office Deployment Tool...
 "%OfficeToolPath%" /quiet /extract:"%TempPath%"
 if errorlevel 1 (
+    powershell -NoProfile -Command "$pbg=[Console]::BackgroundColor;$pfg=[Console]::ForegroundColor;[Console]::BackgroundColor='DarkRed';[Console]::ForegroundColor='White';cls;Start-Sleep -Seconds 2;[Console]::BackgroundColor=$pbg;[Console]::ForegroundColor=$pfg;cls"
     echo ERROR: Failed to extract Office Deployment Tool.
     exit /b 1
 )
@@ -43,9 +45,11 @@ REM Run the Office setup with the configuration file
 echo Running Office setup...
 "%TempPath%\Setup.exe" /configure "%Config64Bit%"
 if errorlevel 1 (
+    powershell -NoProfile -Command "$pbg=[Console]::BackgroundColor;$pfg=[Console]::ForegroundColor;[Console]::BackgroundColor='DarkRed';[Console]::ForegroundColor='White';cls;Start-Sleep -Seconds 2;[Console]::BackgroundColor=$pbg;[Console]::ForegroundColor=$pfg;cls"
     echo ERROR: Installation failed. Please check the logs.
     exit /b 1
 )
 
 echo Installation completed successfully!
+powershell -NoProfile -Command "$pbg=[Console]::BackgroundColor;$pfg=[Console]::ForegroundColor;[Console]::BackgroundColor='DarkGreen';[Console]::ForegroundColor='White';cls;Start-Sleep -Seconds 2;[Console]::BackgroundColor=$pbg;[Console]::ForegroundColor=$pfg;cls"
 exit /b 0

@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "file system",
+  "group": "core",
+  "desc": "Directory tree structure visualizer with colored output",
+  "aliases": []
+}

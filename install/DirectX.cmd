@@ -8,6 +8,7 @@ echo [1/3] Pobieranie instalatora DirectX do folderu TEMP...
 powershell -Command "Invoke-WebRequest -Uri 'https://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe' -OutFile '%TEMP_INSTALLER%'"
 
 if not exist "%TEMP_INSTALLER%" (
+    powershell -NoProfile -Command "$pbg=[Console]::BackgroundColor;$pfg=[Console]::ForegroundColor;[Console]::BackgroundColor='DarkRed';[Console]::ForegroundColor='White';cls;Start-Sleep -Seconds 2;[Console]::BackgroundColor=$pbg;[Console]::ForegroundColor=$pfg;cls"
     echo [BLAD] Nie udalo sie pobrac pliku do %TEMP%. Sprawdz polaczenie.
     pause
     exit /b
@@ -21,5 +22,6 @@ echo [3/3] Czyszczenie pliku tymczasowego...
 del /f /q "%TEMP_INSTALLER%"
 
 echo.
+powershell -NoProfile -Command "$pbg=[Console]::BackgroundColor;$pfg=[Console]::ForegroundColor;[Console]::BackgroundColor='DarkGreen';[Console]::ForegroundColor='White';cls;Start-Sleep -Seconds 2;[Console]::BackgroundColor=$pbg;[Console]::ForegroundColor=$pfg;cls"
 echo Operacja zakonczona sukcesem. System DirectX zostal zaktualizowany.
 pause

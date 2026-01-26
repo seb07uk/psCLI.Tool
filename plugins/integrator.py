@@ -5,7 +5,7 @@ from cli import command, Color
 
 __author__ = "Sebastian Januchowski"
 __category__ = "maintenance"
-__group__ = "python"
+__group__ = "mainte."
 __desc__ = "Automatyczna integracja: wykrywa moduły, tworzy metadane i rejestruje"
 
 @command(name="integrate", aliases=["autometadata", "genmeta"])

@@ -1,7 +1,7 @@
 {
   "author": "Sebastian Januchowski",
-  "category": "build",
-  "group": "tools",
+  "category": "build 2 exe",
+  "group": "mainte.",
   "desc": "Build standalone psCLI.exe (PyInstaller onefile)",
   "aliases": ["build", "pack", "compress"]
 }

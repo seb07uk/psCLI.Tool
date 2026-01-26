@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "tool",
+  "group": "install",
+  "desc": "Microsoft Visual C++ 2015–2022 Redistributable (x86/x64) updater",
+  "aliases": ["vcredist", "msvc", "vcpp"]
+}

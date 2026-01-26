@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "system",
+  "group": "core",
+  "desc": "System Shutdown Utility - schedule or abort system shutdown",
+  "aliases": []
+}

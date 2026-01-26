@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "tool",
+  "group": "install",
+  "desc": "Java 8u481 Online Installer (PowerShell)",
+  "aliases": ["set-java", "set-jv"]
+}

@@ -34,6 +34,7 @@ import os
 import sys
 import shutil
 import textwrap
+import json
 
 # --- METADATA (Read by cli.py) ---
 __author__ = "Sebastian Januchowski"
@@ -511,10 +512,10 @@ PLUGINS_DB = {
     
     "mas": {
         "name": "mas",
-        "category": "activation",
+        "category": "microsoft",
         "description": "Microsoft Activation Scripts (MAS) - Windows/Office activation tool",
         "aliases": ["mas", "activation", "kms"],
-        "syntax": ["mas"],
+        "syntax": ["mas", "MAS.cmd"],
         "features": [
             "Windows activation",
             "Office activation",
@@ -522,6 +523,52 @@ PLUGINS_DB = {
         ],
         "examples": [("hack mas", "Execute Microsoft Activation Scripts")],
         "tips": ["Requires administrator privileges", "Loaded via hack tools menu"],
+        "group": "hacking"
+    },
+    
+    "wat": {
+        "name": "wat",
+        "category": "microsoft",
+        "description": "Windows Activation Tools (WAT) - zarządzanie licencją i aktywacją",
+        "aliases": ["wat", "winact"],
+        "syntax": ["wat"],
+        "features": [
+            "Activation status",
+            "License information (basic/detailed)",
+            "BIOS/UEFI product key",
+            "Restart licensing service",
+            "Enter product key",
+            "Activate system"
+        ],
+        "examples": [
+            ("hack wat", "Launch WAT from tools menu"),
+            ("wat", "Run directly from tools directory")
+        ],
+        "tips": [
+            "Administrator privileges required for some operations",
+            "Operates under hacking group (Microsoft tools)"
+        ],
+        "group": "microsoft"
+    },
+    
+    "activstatus": {
+        "name": "activstatus",
+        "category": "microsoft",
+        "description": "Windows Activation Status - quick check of system activation state",
+        "aliases": ["activstatus", "stats"],
+        "syntax": ["activstatus"],
+        "features": [
+            "Windows activation check",
+            "License status report"
+        ],
+        "examples": [
+            ("hack activstatus", "Launch activation status from hack menu"),
+            ("activstatus", "Run script directly from tools")
+        ],
+        "tips": [
+            "Requires console with appropriate privileges",
+            "Fast license diagnostics"
+        ],
         "group": "microsoft"
     },
     
@@ -537,6 +584,42 @@ PLUGINS_DB = {
         ],
         "tips": ["Triggers UAC elevation prompt", "Actions are logged to terminal.json"],
         "storage": r"%userprofile%\.polsoft\psCli\settings\terminal.json"
+    },
+    
+    "passwd": {
+        "name": "passwd",
+        "category": "system",
+        "description": "Password manager and protected launcher for modules and CLI commands",
+        "aliases": ["password", "pass"],
+        "syntax": [
+            "passwd",
+            "passwd help",
+            "passwd protect <command...>",
+            "passwd unprotect <command...>",
+            "passwd list",
+            "passwd clear",
+            "passwd module <name>"
+        ],
+        "features": [
+            "Manage master password (change/reset)",
+            "Protect CLI commands (requires password on run)",
+            "Protect Python modules under modules/",
+            "Interactive menu to run and toggle protection",
+            "Persistent storage in protected.json"
+        ],
+        "examples": [
+            ("passwd", "Open interactive password manager"),
+            ("passwd protect directx jawa vcredis", "Protect selected commands"),
+            ("passwd list", "Show protected commands"),
+            ("passwd module mymod", "Run protected Python module from modules/")
+        ],
+        "tips": [
+            "Protected commands require password before execution",
+            "Modules protection stored under 'modules' section in protected.json",
+            "Use 'clear' to remove all protection",
+            "Aliases: password, pass"
+        ],
+        "storage": r"%userprofile%\.polsoft\psCli\settings\protected.json"
     },
     
     "fido": {
@@ -739,23 +822,36 @@ PLUGINS_DB = {
 
     "html": {
         "name": "html",
-        "category": "web",
-        "description": "HTML report generator - creates formatted HTML reports from CLI output",
-        "aliases": ["report", "export"],
-        "syntax": ["html [title] [content]"],
+        "category": "reports",
+        "description": "HTML Reports & Hub - manage, open and view generated reports (offline-ready)",
+        "aliases": ["report", "export", "reports", "show-reports"],
+        "syntax": [
+            "reports",
+            "show-report <number|name>",
+            "reports-hub",
+            "reports-setup"
+        ],
         "features": [
-            "Generate HTML reports",
-            "Styled output formatting",
-            "Report archiving",
-            "Template support",
-            "CSS styling"
+            "List and open generated HTML reports",
+            "Interactive Reports Hub dashboard",
+            "Offline assets installer (CSS/JS stored locally)",
+            "Local styling via Pico.css and Highlight.js",
+            "Automatic asset fallback if download fails"
         ],
         "examples": [
-            ("html \"System Report\" content", "Generate HTML report"),
-            ("report", "Create system report")
+            ("reports", "Show available HTML reports"),
+            ("show-report 1", "Open the latest report by index"),
+            ("reports-hub", "Open Reports Hub dashboard"),
+            ("reports-setup", "Download local CSS/JS assets for offline mode")
         ],
-        "tips": ["Reports are color-formatted", "Saved to Reports folder", "Easy sharing and viewing"],
-        "storage": r"%userprofile%\.polsoft\psCli\Reports"
+        "tips": [
+            "Use 'reports-setup' once to install local assets",
+            "Reports are saved under the Reports folder",
+            "Reports Hub references local assets for offline viewing",
+            "If asset download fails, minimal inline styles are used"
+        ],
+        "storage": r"%userprofile%\.polsoft\psCli\reports",
+        "assets": r"%userprofile%\.polsoft\psCli\reports\assets"
     },
     
     "integrate": {
@@ -765,11 +861,11 @@ PLUGINS_DB = {
         "aliases": ["autometadata", "genmeta"],
         "syntax": ["integrate", "autometadata", "genmeta"],
         "examples": [
-            ("integrate", "Wykryj i zintegruj nowe moduły")
+            ("integrate", "Detect and integrate new modules")
         ],
         "tips": [
-            "Automatycznie tworzy metadane w katalogu metadata",
-            "Obsługuje plugins/, games/, ascii/, health/, tools/, install/"
+            "Automatically creates metadata in the metadata directory",
+            "Supports: plugins/, games/, ascii/, health/, tools/, install/"
         ]
     },
     
@@ -780,14 +876,75 @@ PLUGINS_DB = {
         "aliases": ["pack", "compress"],
         "syntax": ["build", "pack", "compress"],
         "examples": [
-            ("build", "Zbuduj psCLI.exe")
+            ("build", "Build psCLI.exe")
         ],
         "tips": [
-            "Dodaje ikonę, jeśli plik icon.ico istnieje",
-            "Uwzględnia dane: plugins, games, metadata, ascii, health, tools, install"
+            "Adds icon if icon.ico exists",
+            "Includes data: plugins, games, metadata, ascii, health, tools, install"
         ]
     }
 }
+
+_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+_meta_dir = os.path.join(_root, "metadata")
+_dirs = {
+    "ascii": os.path.join(_root, "ascii"),
+    "health": os.path.join(_root, "health"),
+    "tools": os.path.join(_root, "tools"),
+    "install": os.path.join(_root, "install"),
+}
+
+def _augment_metadata_docs():
+    try:
+        if not os.path.exists(_meta_dir):
+            return
+        for mf in os.listdir(_meta_dir):
+            if not mf.lower().endswith(".json"):
+                continue
+            mp = os.path.join(_meta_dir, mf)
+            try:
+                with open(mp, "r", encoding="utf-8") as fh:
+                    md = json.load(fh)
+            except:
+                continue
+            base = os.path.splitext(mf)[0]
+            k = base.lower()
+            k_nice = k.replace(".bat", "").replace(".cmd", "").replace(".ps1", "").replace(".exe", "").replace(".vbs", "")
+            if k in PLUGINS_DB or k_nice in PLUGINS_DB:
+                continue
+            found_path = None
+            for dname, dpath in _dirs.items():
+                candidates = [
+                    os.path.join(dpath, base),
+                    os.path.join(dpath, k_nice + ".bat"),
+                    os.path.join(dpath, k_nice + ".cmd"),
+                    os.path.join(dpath, k_nice + ".ps1"),
+                    os.path.join(dpath, k_nice + ".exe"),
+                    os.path.join(dpath, k_nice + ".vbs"),
+                ]
+                if any(os.path.exists(p) for p in candidates):
+                    found_path = dname
+                    break
+            if not found_path:
+                continue
+            name_key = k_nice
+            syntax = [name_key]
+            if base != name_key:
+                syntax.append(base)
+            PLUGINS_DB[name_key] = {
+                "name": name_key,
+                "category": md.get("category", found_path),
+                "description": md.get("desc", "Tool"),
+                "aliases": md.get("aliases", []),
+                "syntax": syntax,
+                "examples": [(f"{'hack' if found_path=='tools' else found_path} {name_key}", "Launch")],
+                "tips": ["Auto-documented from metadata", f"Loaded from /{found_path}/"],
+                "group": md.get("group", found_path)
+            }
+    except:
+        pass
+
+_augment_metadata_docs()
 
 # ======================== HELP ENGINE ========================
 

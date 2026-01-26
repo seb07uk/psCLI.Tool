@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "system",
+  "group": "core",
+  "desc": "Execute programs with administrator privileges",
+  "aliases": []
+}

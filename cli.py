@@ -11,6 +11,7 @@ import platform
 import threading
 import webbrowser
 import re
+import getpass
 
 from plugins import owner
 
@@ -103,6 +104,19 @@ class Dispatcher:
 
     def _clear_screen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
+
+    def _get_protected_commands(self):
+        try:
+            path = os.path.expandvars(r"%userprofile%\.polsoft\psCli\settings\protected.json")
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    lst = data.get("commands", [])
+                    if isinstance(lst, list):
+                        return set([str(x).lower() for x in lst])
+        except:
+            pass
+        return set()
 
     def _prepare_env(self):
         try:
@@ -221,6 +235,55 @@ class Dispatcher:
                         self._register_external_binary(filename, name, ext, full_path)
                 except Exception as e:
                     print(f"{Color.RED}[ERROR] Loading ASCII tool {filename}: {e}{Color.RESET}")
+
+        
+        tools_path = os.path.join(self.root_dir, "tools")
+        if os.path.exists(tools_path):
+            for filename in os.listdir(tools_path):
+                name, ext = os.path.splitext(filename)
+                ext = ext.lower()
+                full_path = os.path.join(tools_path, filename)
+                
+                if os.path.isdir(full_path) or filename.startswith("__"):
+                    continue
+                
+                try:
+                    if ext in [".bat", ".cmd", ".ps1", ".exe", ".vbs"]:
+                        self._register_external_binary(filename, name, ext, full_path)
+                except Exception as e:
+                    print(f"{Color.RED}[ERROR] Loading tool {filename}: {e}{Color.RESET}")
+
+        health_path = os.path.join(self.root_dir, "health")
+        if os.path.exists(health_path):
+            for filename in os.listdir(health_path):
+                name, ext = os.path.splitext(filename)
+                ext = ext.lower()
+                full_path = os.path.join(health_path, filename)
+                
+                if os.path.isdir(full_path) or filename.startswith("__"):
+                    continue
+                
+                try:
+                    if ext in [".bat", ".cmd", ".ps1", ".exe", ".vbs"]:
+                        self._register_external_binary(filename, name, ext, full_path)
+                except Exception as e:
+                    print(f"{Color.RED}[ERROR] Loading health tool {filename}: {e}{Color.RESET}")
+
+        install_path = os.path.join(self.root_dir, "install")
+        if os.path.exists(install_path):
+            for filename in os.listdir(install_path):
+                name, ext = os.path.splitext(filename)
+                ext = ext.lower()
+                full_path = os.path.join(install_path, filename)
+                
+                if os.path.isdir(full_path) or filename.startswith("__"):
+                    continue
+                
+                try:
+                    if ext in [".bat", ".cmd", ".ps1", ".exe", ".vbs"]:
+                        self._register_external_binary(filename, name, ext, full_path)
+                except Exception as e:
+                    print(f"{Color.RED}[ERROR] Loading installer {filename}: {e}{Color.RESET}")
 
         # Register root build script as command
         build_script = os.path.join(self.root_dir, "build.ps1")
@@ -347,10 +410,20 @@ class Dispatcher:
         meta = self._get_metadata_from_json(filename)
         
         def external_call(*args):
-            cmd_args = ["powershell", "-ExecutionPolicy", "Bypass", "-File", full_path] if ext == ".ps1" else \
-                       ["cscript", "//nologo", full_path] if ext == ".vbs" else [full_path]
+            if ext == ".ps1":
+                cmd_args = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full_path]
+                use_shell = False
+            elif ext == ".vbs":
+                cmd_args = ["cscript", "//nologo", full_path]
+                use_shell = False
+            elif ext in [".bat", ".cmd"]:
+                cmd_args = ["cmd", "/c", full_path]
+                use_shell = False
+            else:
+                cmd_args = [full_path]
+                use_shell = False
             try:
-                subprocess.run(cmd_args + list(args), shell=(ext in [".bat", ".cmd"]), check=True)
+                subprocess.run(cmd_args + list(args), shell=use_shell, check=True)
             except Exception as e:
                 print(f"{Color.RED}[ERROR] Execution: {e}{Color.RESET}")
 
@@ -492,6 +565,27 @@ class Dispatcher:
                 desc = meta.get('desc', 'No description')[:45]
                 print(f"{Color.WHITE}{name:<25}{Color.RESET} | {desc:<45} | {aliases_str:<25}")
         
+        install_dir = os.path.join(self.root_dir, "install")
+        if os.path.exists(install_dir):
+            install_tools = []
+            for f in os.listdir(install_dir):
+                if os.path.splitext(f)[1].lower() in [".bat", ".cmd", ".ps1", ".vbs", ".exe"]:
+                    name = os.path.splitext(f)[0]
+                    meta = self._get_metadata_from_json(f)
+                    install_tools.append((name, meta))
+            
+            if install_tools:
+                print(f"\n{Color.CYAN}--- Installers ---{Color.RESET}")
+            sorted_install = sorted(install_tools, key=lambda x: (
+                str(x[1].get('group', '')).lower(),
+                str(x[1].get('category', '')).lower(),
+                x[0].lower()
+            ))
+            for name, meta in sorted_install:
+                aliases_str = ', '.join(meta.get('aliases', []))
+                desc = meta.get('desc', 'No description')[:45]
+                print(f"{Color.WHITE}{name:<25}{Color.RESET} | {desc:<45} | {aliases_str:<25}")
+        
         print(f"\n{Color.GRAY}{'-' * 100}{Color.RESET}")
 
     def display_list(self, filter_group=None):
@@ -549,6 +643,7 @@ class Dispatcher:
             os_line += f" | Python: {oi.get('python_version')}"
         except Exception:
             os_line = f"OS: {platform.system()} {platform.release()} | Python: {sys.version.split()[0]}"
+        os_line = os_line + " | " + Color.WHITE + Color.BOLD + "[f5] refresh" + Color.RESET
         print(f"{Color.GRAY}{os_line}{Color.RESET}")
         
         header = f"{'GROUP':<{w['group']}} | {'COMMAND':<{w['cmd']}} | {'DESCRIPTION':<{w['desc']}} | {'CATEGORY':<{w['cat']}} | ALIASES"
@@ -582,10 +677,36 @@ class Dispatcher:
         if trigger.lower() in self.get_all_groups():
             self.display_list(trigger.lower())
             return
+        if trigger.lower() in ["refresh", "f5", "reload", "r"]:
+            self.settings = self._load_settings()
+            self.load_plugins()
+            groups = self.get_all_groups()
+            self.display_list("menu" if "menu" in groups else None)
+            return
         target = self.aliases.get(trigger, trigger)
         if target in self.commands:
             try:
-                self.commands[target](*args)
+                func = self.commands[target]
+                grp = str(func.meta.get("group", "")).lower()
+                protected = self._get_protected_commands()
+                if target.lower() in protected:
+                    try:
+                        pm = importlib.import_module("plugins.passwd")
+                        if not getattr(pm, "verify_once")():
+                            print(f"{Color.RED}[!] Incorrect password{Color.RESET}")
+                            return
+                    except Exception:
+                        entered = getpass.getpass(f"{Color.YELLOW}Password:{Color.RESET} ").strip()
+                        if not entered:
+                            print(f"{Color.RED}[!] Incorrect password{Color.RESET}")
+                            return
+                if grp == "mainte.":
+                    expected = os.environ.get("PSCLI_MAINTE_PASS") or self.settings.get("security", {}).get("mainte_password") or "polsoft"
+                    entered = getpass.getpass(f"{Color.YELLOW}Password:{Color.RESET} ").strip()
+                    if entered != expected:
+                        print(f"{Color.RED}[!] Incorrect password{Color.RESET}")
+                        return
+                func(*args)
             except Exception as e:
                 print(f"{Color.RED}[RUNTIME ERROR] '{trigger}': {e}{Color.RESET}")
         else:
@@ -598,10 +719,23 @@ class Dispatcher:
         try:
             if msvcrt.kbhit():
                 key = msvcrt.getch()
-                # F1 on Windows is \x00K in extended key mode
-                if key == b'\x00':
+                if key in (b'\x00', b'\xe0'):
                     next_key = msvcrt.getch()
-                    if next_key == b'?':  # F1 key
+                    if next_key == b';':
+                        return True
+        except:
+            pass
+        return False
+
+    def _check_f5_key(self):
+        if not HAS_MSVCRT:
+            return False
+        try:
+            if msvcrt.kbhit():
+                key = msvcrt.getch()
+                if key in (b'\x00', b'\xe0'):
+                    next_key = msvcrt.getch()
+                    if next_key == b'?':
                         return True
         except:
             pass
@@ -624,6 +758,12 @@ if __name__ == "__main__":
                 # Check for F1 key press
                 if cli._check_f1_key():
                     cli.display_list("core")
+                    continue
+                if hasattr(cli, "_check_f5_key") and cli._check_f5_key():
+                    cli.settings = cli._load_settings()
+                    cli.load_plugins()
+                    groups = cli.get_all_groups()
+                    cli.display_list("menu" if "menu" in groups else None)
                     continue
                 
                 prompt_fmt = cli.settings.get("ui", {}).get("default_prompt", "{root_dir} > ")
@@ -667,7 +807,7 @@ if __name__ == "__main__":
                         cli.display_list("menu")
                         continue
 
-                    if cmd in ["reload", "r"]: 
+                    if cmd in ["reload", "r", "refresh", "f5"]: 
                         cli.settings = cli._load_settings()
                         cli.load_plugins()
                         groups = cli.get_all_groups()

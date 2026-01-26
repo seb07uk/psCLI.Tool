@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "output",
+  "group": "core",
+  "desc": "Displays the provided text in green",
+  "aliases": []
+}

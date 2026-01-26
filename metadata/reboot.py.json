@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "system",
+  "group": "core",
+  "desc": "System Reboot Utility - schedule or abort system restart",
+  "aliases": []
+}

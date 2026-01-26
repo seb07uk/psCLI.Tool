@@ -1,0 +1,7 @@
+{
+  "author": "Sebastian Januchowski",
+  "category": "file system",
+  "group": "core",
+  "desc": "Changes the current working directory (with history support)",
+  "aliases": []
+}

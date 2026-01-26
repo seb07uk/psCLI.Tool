@@ -210,6 +210,7 @@ python cli.py ascii parrot
 | `echo` | `say`, `repeat`, `e` | 🔊 Echo text to console |
 | `owner` | `about`, `me`, `whoami` | 👤 Owner information & environment |
 | `sudo` | `admin`, `elevate` | 🔐 Run processes with admin privileges |
+| `passwd` | `password`, `pass` | 🔐 Password manager for protected module execution and admin access |
 
 ### 🛠️ Utility Group Commands
 
@@ -606,20 +607,35 @@ psCLI.Tool > aliases list
 - ❌ Remove aliases
 - 💾 Save alias configuration
 
-### 📄 HTML Reports (`html.py`)
+### 📄 HTML Reports & Hub (`html.py`)
 
-HTML report generator for CLI output:
+Manage, open and view generated reports. Offline-ready with local assets:
 
 ```bash
-psCLI.Tool > html "System Report"
+# List available reports
+psCLI.Tool > reports
+
+# Open a report by index or name
+psCLI.Tool > show-report 1
+psCLI.Tool > show-report system-report.html
+
+# Open Reports Hub dashboard
+psCLI.Tool > reports-hub
+
+# One-time: download local CSS/JS assets for offline mode
+psCLI.Tool > reports-setup
 ```
 
 **Features:**
-- 📊 Generate formatted HTML reports
-- 🎨 Styled output formatting
-- 📁 Report archiving
-- 📝 Template support
-- 🎯 CSS styling
+- 📋 List and open generated HTML reports
+- 🗂️ Interactive Reports Hub dashboard
+- 🌐 Offline assets installer (stores CSS/JS locally)
+- 🎨 Local styling via Pico.css and Highlight.js
+- 🛡️ Automatic minimal fallback if asset download fails
+
+**Storage:**
+- Reports: %userprofile%\.polsoft\psCLI\reports
+- Assets: %userprofile%\.polsoft\psCLI\reports\assets
 
 ---
 
@@ -777,42 +793,42 @@ Made with ❤️ by Sebastian Januchowski
 ### 🧩 Automatyczna integracja metadanych
 - Nowa komenda: integrate (aliasy: autometadata, genmeta)
 - Moduł: [integrator.py](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/plugins/integrator.py)
-- Działanie:
-  - Skanuje katalogi: plugins, games, ascii, health, tools, install
-  - Tworzy brakujące metadane JSON w [metadata](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata)
-  - Dla plików .py odczytuje: __author__, __category__, __group__, __desc
-- Użycie:
+- How it works:
+  - Scans directories: plugins, games, ascii, health, tools, install
+  - Creates missing JSON metadata in [metadata](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata)
+  - For .py files reads: __author__, __category__, __group__, __desc
+- Usage:
 
 ```bash
 psCLI.Tool > integrate
 ```
 
-### 🎮 Integracja gier
-- Gry w [games](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/games) rejestrowane są automatycznie, jeśli posiadają funkcję main() lub menu()
-- Metadane gier znajdują się w [metadata](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata) jako pliki <nazwa>.json (bez rozszerzenia .py)
-- Przykłady:
+### 🎮 Game Integration
+- Games in [games](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/games) are registered automatically if they provide a main() or menu() function
+- Game metadata is stored in [metadata](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata) as <name>.json files (without the .py extension)
+- Examples:
   - [Tic-Tac-Toe.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Tic-Tac-Toe.json)
   - [Snake CLI.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Snake%20CLI.json)
   - [Rock-Paper-Scissors.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Rock-Paper-Scissors.json)
   - [Tetris Mini.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Tetris%20Mini.json)
   - [Racer CLI.json](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/metadata/Racer%20CLI.json)
 
-### 🏗️ Budowa standalone (psCLI.exe)
-- Skrypt budujący: [build.ps1](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/build.ps1)
-- Wspiera dołączanie katalogów: plugins, games, metadata, ascii, health, tools, install
-- Automatycznie dodaje ikonę, jeśli plik [icon.ico](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/icon.ico) istnieje
-- Uruchomienie:
+### 🏗️ Standalone Build (psCLI.exe)
+- Build script: [build.ps1](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/build.ps1)
+- Supports including directories: plugins, games, metadata, ascii, health, tools, install
+- Automatically adds an icon if [icon.ico](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/icon.ico) exists
+- Run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File build.ps1
 powershell -ExecutionPolicy Bypass -File build.ps1 -Clean
 ```
 
-### 🔧 Komenda „build” w CLI
-- [cli.py](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/cli.py) rejestruje [build.ps1](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/build.ps1) jako komendę:
-  - build (aliasy: pack, compress)
-  - Uruchamia PowerShell z -ExecutionPolicy Bypass -File build.ps1
+### 🔧 “build” Command in CLI
+- [cli.py](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/cli.py) registers [build.ps1](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/build.ps1) as a command:
+  - build (aliases: pack, compress)
+  - Launches PowerShell with -ExecutionPolicy Bypass -File build.ps1
 
-### 📦 Lokalizacja binarki
-- Po kompilacji plik wykonywalny znajduje się w:
+### 📦 Binary Location
+- After compilation, the executable is located at:
   - [dist/psCLI.exe](file:///c:/Users/max/polsoft.its/GitHub/psCLI.Tool/dist/psCLI.exe)

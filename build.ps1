@@ -35,6 +35,11 @@ $iconPath = Join-Path $PSScriptRoot "icon.ico"
 if (Test-Path $iconPath) {
     $pyArgs += @("--icon", $iconPath)
 }
+# Optional Windows Version resource (embed properties) from version.txt
+$versionFile = Join-Path $PSScriptRoot "version.txt"
+if (Test-Path $versionFile) {
+    $pyArgs += @("--version-file", $versionFile)
+}
 $pyArgs += "cli.py"
 
-& pyinstaller @pyArgs
+& python -m PyInstaller @pyArgs

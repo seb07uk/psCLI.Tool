@@ -1,0 +1,7 @@
+{
+  "author": "Gemini",
+  "category": "system",
+  "group": "core",
+  "desc": "Saves file list with detailed folder summary to %USERPROFILE%/.polsoft/psCli/Save",
+  "aliases": []
+}

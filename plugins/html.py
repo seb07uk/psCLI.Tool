@@ -1,6 +1,7 @@
 import os
 import webbrowser
 import datetime
+import urllib.request
 from cli import command, Color
 
 __author__ = "System"
@@ -8,9 +9,52 @@ __category__ = "Reports"
 __group__ = "reports"
 __desc__ = "HTML Report Management - view and manage generated reports."
 
+ASSETS = {
+    "css/pico.min.css": "https://unpkg.com/@picocss/pico@latest/css/pico.min.css",
+    "js/highlight.min.js": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js",
+    "css/highlight.min.css": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+}
+
+def ensure_assets(reports_dir):
+    """Download local CSS/JS assets to keep HTML portable and offline."""
+    assets_dir = os.path.join(reports_dir, "assets")
+    try:
+        os.makedirs(assets_dir, exist_ok=True)
+        for rel, url in ASSETS.items():
+            target = os.path.join(assets_dir, rel.replace("/", os.sep))
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            if not os.path.exists(target) or os.path.getsize(target) == 0:
+                try:
+                    urllib.request.urlretrieve(url, target)
+                except Exception:
+                    # Fallback minimal content
+                    if rel.endswith(".css"):
+                        with open(target, "w", encoding="utf-8") as f:
+                            f.write("/* fallback */ body{font-family:Segoe UI,Consolas,Courier New,monospace}")
+                    elif rel.endswith(".js"):
+                        with open(target, "w", encoding="utf-8") as f:
+                            f.write("/* fallback */")
+        return assets_dir
+    except Exception:
+        return None
+
 
 def generate_reports_page(reports_dir):
     """Generate an attractive HTML page for reports listing."""
+    assets_dir = ensure_assets(reports_dir)
+    pico_css = ""
+    hl_css = ""
+    hl_js = ""
+    if assets_dir:
+        pico_path = os.path.join(assets_dir, "css", "pico.min.css")
+        hlc_path = os.path.join(assets_dir, "css", "highlight.min.css")
+        hlj_path = os.path.join(assets_dir, "js", "highlight.min.js")
+        if os.path.exists(pico_path):
+            pico_css = f'<link rel="stylesheet" href="assets/css/pico.min.css"/>'
+        if os.path.exists(hlc_path):
+            hl_css = f'<link rel="stylesheet" href="assets/css/highlight.min.css"/>'
+        if os.path.exists(hlj_path):
+            hl_js = f'<script src="assets/js/highlight.min.js"></script><script>if(window.hljs)hljs.highlightAll();</script>'
     reports = sorted(
         [f for f in os.listdir(reports_dir) if f.endswith('.html')],
         key=lambda x: os.path.getmtime(os.path.join(reports_dir, x)),
@@ -44,6 +88,8 @@ def generate_reports_page(reports_dir):
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERMINAL CLI - Reports Hub</title>
+    {pico_css}
+    {hl_css}
     <style>
         * {{
             margin: 0;
@@ -214,6 +260,7 @@ def generate_reports_page(reports_dir):
             <p>🔧 TERMINAL CLI v2026 • Report Management System</p>
         </div>
     </div>
+    {hl_js}
 </body>
 </html>
 """
@@ -330,3 +377,15 @@ def reports_hub(*args):
         
     except Exception as e:
         print(f"{Color.RED}[ERROR] Could not open Reports Hub: {e}{Color.RESET}")
+
+
+@command(name="reports-setup", aliases=["setup-reports", "assets"])
+def reports_setup(*args):
+    """Download local HTML/CSS/JS assets to keep reports offline-ready."""
+    reports_dir = os.path.expandvars(r"%userprofile%\.polsoft\psCLI\reports")
+    os.makedirs(reports_dir, exist_ok=True)
+    assets_dir = ensure_assets(reports_dir)
+    if assets_dir and os.path.exists(assets_dir):
+        print(f"{Color.GREEN}[OK] Assets installed to: {assets_dir}{Color.RESET}")
+    else:
+        print(f"{Color.YELLOW}[WARN] Assets setup failed or partial. Using inline fallbacks.{Color.RESET}")

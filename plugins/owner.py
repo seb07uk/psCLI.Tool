@@ -12,6 +12,7 @@ import subprocess
 import io
 import csv
 import re
+import version
 
 __author__ = "Sebastian Januchowski"
 __category__ = "user info"
@@ -152,10 +153,10 @@ def get_owner_info():
     username = getpass.getuser()
     
     metadata = {
-        "version": "1.0.2",
+        "version": version.VERSION,
         "last_update": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "author": username,
-        "environment": "TERMINAL CLI"
+        "environment": version.NAME
     }
 
     net = get_network_info()

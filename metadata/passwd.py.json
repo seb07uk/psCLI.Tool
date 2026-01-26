@@ -1,0 +1,6 @@
+  "author": "Sebastian Januchowski",
+  "category": "system",
+  "group": "system",
+  "desc": "Password manager for protected module execution and admin access",
+  "aliases": ["passwd", "password", "pass"]
+}
