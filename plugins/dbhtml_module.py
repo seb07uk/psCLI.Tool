@@ -44,8 +44,31 @@ import hashlib
 import re
 from pathlib import Path
 from urllib.parse import urlparse, urljoin
-from html.parser import HTMLParser
-import html
+
+# Import HTMLParser before any local html module
+try:
+    from html.parser import HTMLParser
+    import html as stdlib_html
+except ImportError:
+    from HTMLParser import HTMLParser
+    import html as stdlib_html
+
+# Lazy import to avoid circular dependency
+command = None
+Color = None
+
+def _lazy_import():
+    global command, Color
+    if command is None:
+        from cli import command as cmd, Color as col
+        command = cmd
+        Color = col
+
+# Metadane modułu (defined here to avoid circular import)
+__author__ = "Sebastian Januchowski"
+__category__ = "database"
+__group__ = "tools"
+__desc__ = "Zarządzanie bazami danych HTML/Web - SQLite + JSON"
 
 # Kolory ANSI
 class Colors:
@@ -1053,7 +1076,16 @@ class SimpleHTMLParser(HTMLParser):
             self.in_title = False
 
 
-def main():
+# Delayed decorator to avoid circular import
+def _get_command_decorator():
+    """Get the command decorator on demand"""
+    from cli import command as cmd
+    return cmd
+
+# Apply decorator when first accessed
+_dbhtml_func = None
+
+def main(*args):
     """Główna funkcja CLI"""
     import argparse
     
@@ -1218,6 +1250,15 @@ Przykłady użycia:
     
     # Zamknij połączenie
     db.close()
+
+
+# Apply the command decorator (delayed to avoid circular import)
+try:
+    cmd_decorator = _get_command_decorator()
+    main = cmd_decorator(name="dbhtml", aliases=["html", "webdb"])(main)
+except ImportError:
+    # If can't import at module level, it will be handled when loaded through CLI
+    pass
 
 
 if __name__ == "__main__":

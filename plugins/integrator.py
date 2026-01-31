@@ -85,3 +85,15 @@ def integrate(*args):
             print(f"{Color.CYAN} + {m}{Color.RESET}")
     if skipped:
         print(f"{Color.GRAY}Already present:{Color.RESET} {', '.join(skipped[:10])}{(' ...' if len(skipped)>10 else '')}")
+    
+    # Reload dispatcher to register new commands
+    try:
+        import sys
+        if 'cli' in sys.modules:
+            cli_module = sys.modules['cli']
+            if hasattr(cli_module, 'dispatcher') and cli_module.dispatcher:
+                print(f"\n{Color.YELLOW}[INFO]{Color.RESET} Reloading command dispatcher...")
+                cli_module.dispatcher.load_plugins()
+                print(f"{Color.GREEN}[OK]{Color.RESET} Dispatcher reloaded - {len(cli_module.dispatcher.commands)} commands available")
+    except Exception as e:
+        print(f"{Color.YELLOW}[WARN]{Color.RESET} Could not reload dispatcher: {e}")

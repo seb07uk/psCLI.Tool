@@ -1,0 +1,20 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python cli\\.py$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python -c \"import sys; sys\\.path\\.insert\\(0, '\\.'\\); from plugins import dbhtml_module; print\\('✓ Module loaded successfully'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python cli\\.py help dbhtml$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python cli\\.py integrate 2>&1 \\| findstr /i \"dbhtml\\|error\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
